@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter 
 @Setter 
 @Entity 
-@Table(name = "usuarios")
+@Table(name = "tb_usuarios")
 public class Usuario {
     
     @Id 
@@ -33,4 +33,16 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Papel papel;
+
+    public Usuario() {}
+
+    public Usuario(Long id, String nome, String email, String senha, Papel papel) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.papel = papel;
+    }
+
+    
 }
