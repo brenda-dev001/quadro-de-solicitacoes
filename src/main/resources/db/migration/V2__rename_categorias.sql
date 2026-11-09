@@ -1,0 +1,1 @@
+ALTER TABLE categorias RENAME TO tb_categorias;
