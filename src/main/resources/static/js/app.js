@@ -623,7 +623,11 @@ class AppVacinacao {
                     if (!isCurrentlyOpen) {
                         const searchInput = dropdown.querySelector('input[type="text"]');
                         if (searchInput) {
-                            searchInput.focus();
+                            searchInput.value = "";
+                            dropdown.querySelector('[data-search-panel]').hidden = true;
+                            dropdown.querySelector('[data-search-toggle]').hidden = false;
+                            optionsList.innerHTML = '<li class="p-2 text-gray-500" role="status">Carregando opções...</li>';
+                            searchInput.dispatchEvent(new Event('carregar-opcoes', { bubbles: true }));
                         }
                     }
                 });
@@ -650,20 +654,13 @@ class AppVacinacao {
                     if (searchInput) {
                         searchInput.value = "";
                     }
-                    if (optionsList) {
-                        optionsList.innerHTML = "";
+                    if (optionsList && searchInput && !dropdown.classList.contains('hidden')) {
+                        searchInput.dispatchEvent(new Event('carregar-opcoes', { bubbles: true }));
                     }
                 });
             }
 
             const searchInput = dropdown?.querySelector('input[type="text"]');
-            if (searchInput && optionsList) {
-                searchInput.addEventListener("input", () => {
-                    if (searchInput.value.trim().length < 3) {
-                        optionsList.innerHTML = "";
-                    }
-                });
-            }
 
             if (optionsList) {
                 optionsList.addEventListener("click", (event) => {

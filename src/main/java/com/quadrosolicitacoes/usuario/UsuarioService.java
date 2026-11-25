@@ -15,7 +15,7 @@ public class UsuarioService {
     }
 
     public List<UsuarioResponse> buscarPeloNome(String nome, Papel papel) {
-        return usuarioRepository.findTop10ByNomeContainingIgnoreCaseAndPapelOrderByNomeAsc(nome, papel)
+        return usuarioRepository.findByNomeContainingIgnoreCaseAndPapelOrderByNomeAsc(nome, papel)
                 .stream().map(usuario -> new UsuarioResponse(usuario.getId(), usuario.getNome())).toList();
     }
 }

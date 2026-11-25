@@ -214,3 +214,10 @@ h1 { margin: 0; font-size: clamp(24px, 2.4vw, 32px); font-weight: 720; line-heig
 .filter-grid .searchable-select-container, .filter-grid .w-full.mt-6 { margin-top: 0; }
 .filter-grid input:not([type=hidden]), .filter-grid select, .filter-grid .custom-select-trigger { height: 44px; }
 .filter-actions { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+.select-search-actions { border-bottom: 1px solid var(--line); padding: 8px; }
+.select-search-toggle { display: block; width: 100%; padding: 7px 8px; border: 0; border-radius: 5px; background: #f4f7fc; color: var(--blue); text-align: left; font-size: 11px; }
+.select-search-toggle:hover { background: #eaf1ff; }
+.page .select-search-panel input { height: 36px; padding-right: 58px; }
+.select-search-close { position: absolute; z-index: 2; right: 0; top: 0; width: 28px; height: 36px; color: #718198; font-size: 17px; }
+.select-search-panel .pe-3 { right: 22px; }

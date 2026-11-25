@@ -11,6 +11,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     public Page<Categoria> findAllByStatus(Status status, Pageable pageable);
     public Optional<Categoria> findByIdAndStatus(Long id, Status status);
-    public List<Categoria> findTop10ByNomeContainingIgnoreCaseAndStatusOrderByNomeAsc(String nome, Status status);
+    public List<Categoria> findByNomeContainingIgnoreCaseAndStatusOrderByNomeAsc(String nome, Status status);
 
 }

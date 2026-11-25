@@ -48,7 +48,7 @@ function prepararInterface(container = document) {
             if (['Enter', ' ', 'ArrowDown'].includes(event.key)) {
                 event.preventDefault();
                 if (dropdown.classList.contains('hidden')) trigger.click();
-                else busca.focus();
+                else lista.querySelector('li[data-value]')?.focus();
             }
         });
         dropdown.addEventListener('keydown', event => {
@@ -75,6 +75,20 @@ function prepararInterface(container = document) {
             trigger.removeAttribute('aria-invalid');
             seletor.querySelector('.client-error')?.remove();
             trigger.focus();
+        });
+        const botaoBusca = seletor.querySelector('[data-search-toggle]');
+        const painelBusca = seletor.querySelector('[data-search-panel]');
+        botaoBusca.addEventListener('click', () => {
+            painelBusca.hidden = false;
+            botaoBusca.hidden = true;
+            busca.focus();
+        });
+        seletor.querySelector('[data-search-close]').addEventListener('click', () => {
+            painelBusca.hidden = true;
+            botaoBusca.hidden = false;
+            busca.value = '';
+            busca.dispatchEvent(new Event('carregar-opcoes', { bubbles: true }));
+            botaoBusca.focus();
         });
         prepararOpcoes();
     });

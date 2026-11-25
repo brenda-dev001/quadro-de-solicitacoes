@@ -53,7 +53,7 @@ public class CategoriaService {
     }
 
     public List<CategoriaResponse> buscarPeloNome(String nome) {
-        return categoriaRepository.findTop10ByNomeContainingIgnoreCaseAndStatusOrderByNomeAsc(nome, Status.ATIVO).stream()
+        return categoriaRepository.findByNomeContainingIgnoreCaseAndStatusOrderByNomeAsc(nome, Status.ATIVO).stream()
             .map(this::toResponse)
             .toList();
     }

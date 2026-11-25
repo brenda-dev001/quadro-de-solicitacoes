@@ -665,13 +665,15 @@
         <div
           class="custom-select-dropdown absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden"
           th:id="${nomeAtributo + '-dropdown'}">
-          <div class="p-2 border-b border-gray-200">
-            <div class="relative">
+          <div class="select-search-actions">
+            <button type="button" class="select-search-toggle" data-search-toggle>Pesquisar nesta lista</button>
+            <div class="relative select-search-panel" data-search-panel hidden>
+              <button type="button" class="select-search-close" data-search-close aria-label="Fechar pesquisa">×</button>
               <input type="text"
                 class="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-transparent"
                 th:placeholder="${placeholderBusca}" th:aria-label="${'Buscar ' + textoLabel}" th:hx-params="${paramBusca}" th:name="${paramBusca}" autocomplete="off"
                 th:hx-get="@{__${urlBusca}__}" th:hx-target="${'#' + nomeAtributo + '-list'}"
-                hx-trigger="keyup[this.value.trim().length >= 3] changed delay:500ms" hx-swap="innerHTML" />
+                hx-trigger="carregar-opcoes, input changed delay:250ms" hx-swap="innerHTML" />
               <div class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
                 <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -682,7 +684,9 @@
               </div>
             </div>
           </div>
-          <ul class="options-list max-h-60 overflow-y-auto" th:id="${nomeAtributo + '-list'}"></ul>
+          <ul class="options-list max-h-60 overflow-y-auto" th:id="${nomeAtributo + '-list'}">
+            <li class="p-2 text-gray-500" role="status">Carregando opções...</li>
+          </ul>
         </div>
       </div>
 
@@ -731,13 +735,15 @@
         <div
           class="custom-select-dropdown absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden"
           th:id="${nomeAtributo + '-dropdown'}">
-          <div class="p-2 border-b border-gray-200">
-            <div class="relative">
+          <div class="select-search-actions">
+            <button type="button" class="select-search-toggle" data-search-toggle>Pesquisar nesta lista</button>
+            <div class="relative select-search-panel" data-search-panel hidden>
+              <button type="button" class="select-search-close" data-search-close aria-label="Fechar pesquisa">×</button>
               <input type="text"
                 class="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-transparent"
                 th:placeholder="${placeholderBusca}" th:aria-label="${'Buscar ' + textoLabel}" th:hx-params="${paramBusca}" th:name="${paramBusca}" autocomplete="off"
                 th:hx-get="@{__${urlBusca}__}" th:hx-target="${'#' + nomeAtributo + '-list'}"
-                hx-trigger="keyup[this.value.trim().length >= 3] changed delay:500ms" hx-swap="innerHTML" />
+                hx-trigger="carregar-opcoes, input changed delay:250ms" hx-swap="innerHTML" />
               <div class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
                 <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -748,7 +754,9 @@
               </div>
             </div>
           </div>
-          <ul class="options-list max-h-60 overflow-y-auto" th:id="${nomeAtributo + '-list'}"></ul>
+          <ul class="options-list max-h-60 overflow-y-auto" th:id="${nomeAtributo + '-list'}">
+            <li class="p-2 text-gray-500" role="status">Carregando opções...</li>
+          </ul>
         </div>
       </div>
 
