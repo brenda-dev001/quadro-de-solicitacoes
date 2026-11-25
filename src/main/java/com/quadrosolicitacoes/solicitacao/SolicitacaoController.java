@@ -21,6 +21,8 @@ import com.quadrosolicitacoes.common.exception.RegraNegocioException;
 import com.quadrosolicitacoes.core.web.notification.NotificacaoSweetAlert2;
 import com.quadrosolicitacoes.core.web.notification.TipoNotificacaoSweetAlert2;
 import com.quadrosolicitacoes.core.web.pagination.PageWrapper;
+import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoAtendimentoRequest;
+import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoCancelamentoRequest;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoCreateRequest;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoResponse;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoSearchRequest;
@@ -97,9 +99,61 @@ public class SolicitacaoController {
         return detalhes(htmxRequest);
     }
 
+    @PostMapping("/{id}/assumir")
+    public String assumir(@PathVariable Long id, @Valid SolicitacaoAtendimentoRequest form,
+            BindingResult resultado, Model model, RedirectAttributes redirect,
+            HttpServletRequest request, HtmxRequest htmxRequest) {
+        if (!resultado.hasErrors()) {
+            try {
+                solicitacaoService.assumir(id, form);
+                return redirecionar(id, "Atendimento iniciado com sucesso!", redirect, htmxRequest);
+            } catch (RegraNegocioException ex) {
+                resultado.reject("regraNegocio", ex.getMessage());
+            }
+        }
+        prepararDetalhes(id, model, request);
+        return detalhes(htmxRequest);
+    }
+
+    @PostMapping("/{id}/concluir")
+    public String concluir(@PathVariable Long id, @Valid SolicitacaoAtendimentoRequest form,
+            BindingResult resultado, Model model, RedirectAttributes redirect,
+            HttpServletRequest request, HtmxRequest htmxRequest) {
+        if (!resultado.hasErrors()) {
+            try {
+                solicitacaoService.concluir(id, form);
+                return redirecionar(id, "Solicitação concluída com sucesso!", redirect, htmxRequest);
+            } catch (RegraNegocioException ex) {
+                resultado.reject("regraNegocio", ex.getMessage());
+            }
+        }
+        prepararDetalhes(id, model, request);
+        return detalhes(htmxRequest);
+    }
+
+    @PostMapping("/{id}/cancelar")
+    public String cancelar(@PathVariable Long id, @Valid SolicitacaoCancelamentoRequest form,
+            BindingResult resultado, Model model, RedirectAttributes redirect,
+            HttpServletRequest request, HtmxRequest htmxRequest) {
+        if (!resultado.hasErrors()) {
+            try {
+                solicitacaoService.cancelar(id, form);
+                return redirecionar(id, "Solicitação cancelada com sucesso!", redirect, htmxRequest);
+            } catch (RegraNegocioException ex) {
+                resultado.reject("regraNegocio", ex.getMessage());
+            }
+        }
+        prepararDetalhes(id, model, request);
+        return detalhes(htmxRequest);
+    }
+
     private void prepararDetalhes(Long id, Model model, HttpServletRequest request) {
         SolicitacaoResponse solicitacao = solicitacaoService.buscarPorId(id);
         model.addAttribute("solicitacao", solicitacao);
+        if (!model.containsAttribute("solicitacaoAtendimentoRequest")) model.addAttribute(
+                "solicitacaoAtendimentoRequest", new SolicitacaoAtendimentoRequest(null, null));
+        if (!model.containsAttribute("solicitacaoCancelamentoRequest")) model.addAttribute(
+                "solicitacaoCancelamentoRequest", new SolicitacaoCancelamentoRequest(solicitacao.solicitanteId()));
     }
 
     private String detalhes(HtmxRequest htmxRequest) {
