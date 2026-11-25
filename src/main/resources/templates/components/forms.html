@@ -577,7 +577,7 @@
       th:text="${textoLabelGroup}">Grupo de Opções</label>
 
     <div class="flex flex-col gap-3"
-      th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}, valorDoObjeto=*{__${nomeAtributo}__}">
+      th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}, valorDoObjeto=*{#object?.__${nomeAtributo}__}">
       <div th:each="item, stat : ${listaOpcoes}" class="flex items-center">
         <input type="radio" th:name="${nomeAtributo}" th:id="${nomeAtributo + stat.index}"
           th:value="${propValue != null ? item[propValue] : item}" th:disabled="${disabledFlag}"
@@ -771,7 +771,7 @@
 
   <th:block th:if="${validFlag}">
     <div class="w-full mt-6"
-      th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}, valorDoObjeto=*{__${nomeAtributo}__}">
+      th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}, valorDoObjeto=*{#object?.__${nomeAtributo}__}">
       <label th:for="${nomeAtributo}" th:text="${textoLabel}"
         class="block font-medium mb-2 text-gray-700"></label>
 
@@ -783,7 +783,7 @@
 
           <option th:each="item : ${listaOpcoes}" th:value="${propValue != null ? item[propValue] : item}"
             th:text="${propLabel != null ? item[propLabel] : item}"
-            th:selected="${valorDoObjeto != null and valorDoObjeto == item}">
+            th:selected="${valorDoObjeto != null and valorDoObjeto == (propValue != null ? item[propValue] : item)}">
           </option>
         </select>
 

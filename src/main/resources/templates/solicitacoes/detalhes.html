@@ -29,7 +29,7 @@
                 <div th:replace="~{components/forms :: inputBuscavel(
                 textoLabel='Técnico', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico',
                 placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisartecnico',
-                valorAtributo=*{tecnicoId}, valorAtributoTexto=*{nomeTecnico}, isValidado=true)}"></div>
+                valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true)}"></div>
                 <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Iniciar atendimento</button>
             </form>
             <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).EM_ANDAMENTO}"
@@ -37,7 +37,7 @@
                 <div th:replace="~{components/forms :: inputBuscavel(
                 textoLabel='Técnico responsável', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico',
                 placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisartecnico',
-                valorAtributo=*{tecnicoId}, valorAtributoTexto=*{nomeTecnico}, isValidado=true)}"></div>
+                valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true)}"></div>
                 <button type="submit" hx-confirm="Você vai concluir esta solicitação!" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Concluir</button>
             </form>
             <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA}"
@@ -63,7 +63,7 @@
                 <div th:replace="~{components/forms :: inputBuscavel(
                 textoLabel='Autor', nomeAtributo='autorId', nomeAtributoTexto='nomeAutor',
                 placeholderBusca='Digite o nome para buscar...', urlBusca=@{/solicitacoes/{id}/pesquisarautor(id=${solicitacao.id})},
-                valorAtributo=*{autorId}, valorAtributoTexto=*{nomeAutor}, isValidado=true)}"></div>
+                valorAtributo=*{#object?.autorId}, valorAtributoTexto=*{#object?.nomeAutor}, isValidado=true)}"></div>
                 <div th:replace="~{components/forms :: inputTextArea(textoLabel='Comentário', nomeAtributo='conteudo', isValidado=true)}"></div>
                 <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Comentar</button>
             </form>

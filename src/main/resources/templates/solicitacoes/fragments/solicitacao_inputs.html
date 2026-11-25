@@ -4,9 +4,9 @@
     <div th:replace="~{components/forms :: inputBuscavel(
                 textoLabel='Categoria', nomeAtributo='categoriaId', nomeAtributoTexto='nomeCategoria',
                 placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarcategoria',
-                valorAtributo=*{categoriaId}, valorAtributoTexto=*{nomeCategoria}, isValidado=true)}"></div>
+                valorAtributo=*{#object?.categoriaId}, valorAtributoTexto=*{#object?.nomeCategoria}, isValidado=true)}"></div>
     <div th:replace="~{components/forms :: inputBuscavel(
                 textoLabel='Funcionário', nomeAtributo='solicitanteId', nomeAtributoTexto='nomeSolicitante',
                 placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarfuncionario',
-                valorAtributo=*{solicitanteId}, valorAtributoTexto=*{nomeSolicitante}, isValidado=true)}"></div>
+                valorAtributo=*{#object?.solicitanteId}, valorAtributoTexto=*{#object?.nomeSolicitante}, isValidado=true)}"></div>
 </th:block>

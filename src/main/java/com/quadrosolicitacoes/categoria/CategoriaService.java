@@ -62,8 +62,8 @@ public class CategoriaService {
     public void atualizar(Long id, CategoriaUpdateRequest request) {
         Categoria categoria = categoriaRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
-        categoria.setNome(request.nome());
-        categoria.setDescricao(request.descricao());
+        categoria.setNome(request.nome().strip());
+        categoria.setDescricao(request.descricao().strip());
         categoriaRepository.save(categoria);
     }
 
@@ -78,15 +78,15 @@ public class CategoriaService {
     private Categoria toEntity(CategoriaSearchRequest request) {
         Categoria categoria = new Categoria();
         categoria.setId(request.id());
-        categoria.setNome(request.nome());
-        categoria.setDescricao(request.descricao());
+        categoria.setNome(request.nome() != null ? request.nome().strip() : null);
+        categoria.setDescricao(request.descricao() != null ? request.descricao().strip() : null);
         return categoria;
     }
 
     private Categoria toEntity(CategoriaCreateRequest request) {
         Categoria categoria = new Categoria();
-        categoria.setNome(request.nome());
-        categoria.setDescricao(request.descricao());
+        categoria.setNome(request.nome().strip());
+        categoria.setDescricao(request.descricao().strip());
         return categoria;
     }
 

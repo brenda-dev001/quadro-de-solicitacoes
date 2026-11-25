@@ -1,5 +1,9 @@
-<th:block th:fragment="erros" xmlns:th="http://www.thymeleaf.org">
-    <ul th:if="${#fields.hasGlobalErrors()}" class="text-sm text-red-600 mt-5">
-        <li th:each="erro : ${#fields.globalErrors()}" th:text="${erro}"></li>
+<div th:fragment="erros" xmlns:th="http://www.thymeleaf.org" th:if="${#fields.hasAnyErrors()}" class="alert-error" role="alert" tabindex="-1">
+    <strong>
+        Confira os dados informados.
+    </strong>
+    <ul>
+        <li th:each="erro : ${#fields.allErrors()}" th:text="${erro}">
+        </li>
     </ul>
-</th:block>
+</div>

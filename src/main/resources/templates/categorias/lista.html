@@ -15,13 +15,14 @@
         <h3 class="text-xl md:text-3xl mt-3 ms-5">Pesquisa de Categorias</h3>
 
         <form th:hx-get="@{/categorias}" th:object="${categoriaSearchRequest}" class="w-1/2 mt-6 ms-5">
+            <div th:replace="~{solicitacoes/fragments/erros :: erros}"></div>
 
             <div class="flex gap-15">
                 <div>
                     <div th:replace="~{components/forms :: inputNumero(
                         textoLabel='Código',
                         nomeAtributo='id',
-                        valorAtributo=*{id},
+                        valorAtributo=*{#object?.id},
                         showGroups=true)}"></div>
                 </div>
 
@@ -29,14 +30,14 @@
                     <div th:replace="~{components/forms :: inputTexto(
                         textoLabel='Nome',
                         nomeAtributo='nome',
-                        valorAtributo=*{nome})}"></div>
+                        valorAtributo=*{#object?.nome})}"></div>
                 </div>
 
                 <div>
                     <div th:replace="~{components/forms :: inputTexto(
                         textoLabel='Descrição',
                         nomeAtributo='descricao',
-                        valorAtributo=*{descricao})}"></div>
+                        valorAtributo=*{#object?.descricao})}"></div>
                 </div>
             </div>
 

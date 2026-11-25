@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import com.quadrosolicitacoes.core.web.validation.FormularioUtil;
 import com.quadrosolicitacoes.categoria.CategoriaService;
 import com.quadrosolicitacoes.comentario.ComentarioService;
 import com.quadrosolicitacoes.comentario.dto.ComentarioCreateRequest;
@@ -55,7 +56,8 @@ public class SolicitacaoController {
 
     @PostMapping
     public String cadastrar(@Valid SolicitacaoCreateRequest form, BindingResult resultado,
-            RedirectAttributes redirect, HtmxRequest htmxRequest) {
+            RedirectAttributes redirect, HttpServletRequest request, HtmxRequest htmxRequest) {
+        FormularioUtil.preservarValores(resultado, request, "descricao", "categoriaId", "nomeCategoria", "solicitanteId", "nomeSolicitante");
         if (!resultado.hasErrors()) {
             try {
                 Long id = solicitacaoService.salvar(form);
@@ -68,13 +70,23 @@ public class SolicitacaoController {
     }
 
     @GetMapping
-    public String pesquisar(SolicitacaoSearchRequest form, Model model,
+    public String pesquisar(@Valid SolicitacaoSearchRequest form, BindingResult resultado, Model model,
             @PageableDefault(size = 7) @SortDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             HttpServletRequest request, HtmxRequest htmxRequest) {
+        FormularioUtil.preservarValores(resultado, request, "id", "descricao", "status", "categoriaId", "nomeCategoria",
+                "solicitanteId", "nomeSolicitante", "tecnicoId", "nomeTecnico");
         model.addAttribute("situacoes", StatusSolicitacao.values());
-        var pagina = solicitacaoService.pesquisar(form, pageable);
+        if (pageable.getSort().stream().anyMatch(ordem -> !java.util.Set.of("id", "descricao", "status", "dataCriacao").contains(ordem.getProperty()))) {
+            resultado.reject("ordenacao", "Selecione uma coluna válida para ordenar");
+        }
+        var pagina = resultado.hasErrors() ? org.springframework.data.domain.Page.<SolicitacaoResponse>empty(pageable)
+                : solicitacaoService.pesquisar(form, pageable);
         model.addAttribute("pagina", new PageWrapper<>(pagina, request));
-        if (pagina.isEmpty()) model.addAttribute("notificacaoSA2", new NotificacaoSweetAlert2(
+        boolean pesquisaRealizada = !resultado.hasErrors()
+                && ("true".equals(request.getParameter("pesquisa")) || !form.isEmpty());
+        model.addAttribute("pesquisaRealizada", pesquisaRealizada);
+        model.addAttribute("pesquisaInvalida", resultado.hasErrors());
+        if (pesquisaRealizada && pagina.isEmpty()) model.addAttribute("notificacaoSA2", new NotificacaoSweetAlert2(
                 "A busca não encontrou solicitações", TipoNotificacaoSweetAlert2.INFO, 4000));
         return htmxRequest.isHtmxRequest() ? "solicitacoes/lista :: conteudo" : "solicitacoes/lista";
     }
@@ -116,6 +128,7 @@ public class SolicitacaoController {
     public String assumir(@PathVariable Long id, @Valid SolicitacaoAtendimentoRequest form,
             BindingResult resultado, Model model, RedirectAttributes redirect,
             HttpServletRequest request, HtmxRequest htmxRequest) {
+        FormularioUtil.preservarValores(resultado, request, "tecnicoId", "nomeTecnico");
         if (!resultado.hasErrors()) {
             try {
                 solicitacaoService.assumir(id, form);
@@ -132,6 +145,7 @@ public class SolicitacaoController {
     public String concluir(@PathVariable Long id, @Valid SolicitacaoAtendimentoRequest form,
             BindingResult resultado, Model model, RedirectAttributes redirect,
             HttpServletRequest request, HtmxRequest htmxRequest) {
+        FormularioUtil.preservarValores(resultado, request, "tecnicoId", "nomeTecnico");
         if (!resultado.hasErrors()) {
             try {
                 solicitacaoService.concluir(id, form);
@@ -148,6 +162,7 @@ public class SolicitacaoController {
     public String cancelar(@PathVariable Long id, @Valid SolicitacaoCancelamentoRequest form,
             BindingResult resultado, Model model, RedirectAttributes redirect,
             HttpServletRequest request, HtmxRequest htmxRequest) {
+        FormularioUtil.preservarValores(resultado, request, "solicitanteId");
         if (!resultado.hasErrors()) {
             try {
                 solicitacaoService.cancelar(id, form);
@@ -164,6 +179,7 @@ public class SolicitacaoController {
     public String comentar(@PathVariable Long id, @Valid ComentarioCreateRequest form,
             BindingResult resultado, Model model, RedirectAttributes redirect,
             HttpServletRequest request, HtmxRequest htmxRequest) {
+        FormularioUtil.preservarValores(resultado, request, "autorId", "nomeAutor", "conteudo");
         if (!resultado.hasErrors()) {
             try {
                 comentarioService.salvar(id, form);
@@ -177,6 +193,9 @@ public class SolicitacaoController {
     }
 
     private void prepararDetalhes(Long id, Model model, Pageable pageable, HttpServletRequest request) {
+        if (pageable.getSort().stream().anyMatch(ordem -> !java.util.Set.of("id", "dataCriacao").contains(ordem.getProperty()))) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("dataCriacao", "id"));
+        }
         SolicitacaoResponse solicitacao = solicitacaoService.buscarPorId(id);
         model.addAttribute("solicitacao", solicitacao);
         model.addAttribute("pagina", new PageWrapper<>(comentarioService.pesquisar(id, pageable), request, "/solicitacoes/" + id));

@@ -46,7 +46,7 @@ public class ComentarioService {
         if (!solicitante && !tecnico) {
             throw new RegraNegocioException("Somente o solicitante e o técnico responsável podem comentar");
         }
-        comentarioRepository.save(new Comentario(form.conteudo(), autor, solicitacao));
+        comentarioRepository.save(new Comentario(form.conteudo().strip(), autor, solicitacao));
     }
 
     public Page<ComentarioResponse> pesquisar(Long solicitacaoId, Pageable pageable) {

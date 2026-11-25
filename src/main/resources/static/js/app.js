@@ -123,7 +123,9 @@ class AppVacinacao {
 
             if (request.body instanceof FormData) {
                 for (const [key, val] of Array.from(request.body.entries())) {
-                    const valLimpo = this._sanitizarValor(val);
+                    const campo = document.querySelector(`#main [name="${CSS.escape(key)}"]`);
+                    const formatado = campo?.matches('.input-numero, [data-formato]');
+                    const valLimpo = formatado ? this._sanitizarValor(val) : val;
                     if (valLimpo !== val) {
                         request.body.set(key, valLimpo);
                     }
@@ -165,6 +167,7 @@ class AppVacinacao {
                     allowNegative: allowNegative
                 });
             }
+            input.dataset.formato = "dinheiro";
             input.classList.remove("componentemoney");
         });
     }
@@ -211,6 +214,7 @@ class AppVacinacao {
             // Sincroniza também caso o usuário saia do campo ou cole um valor
             input.addEventListener("blur", sincronizarCalendario);
 
+            input.dataset.formato = "data";
             input.classList.remove("componentedata");
             input.setAttribute("placeholder", "DD/MM/AAAA");
             input.setAttribute("maxlength", "10");
@@ -391,6 +395,7 @@ class AppVacinacao {
             });
 
             // Configurações nativas do input
+            input.dataset.formato = "cpf";
             input.classList.remove("componentecpf");
             input.setAttribute("placeholder", "000.000.000-00");
             input.setAttribute("maxlength", "14");
@@ -435,6 +440,8 @@ class AppVacinacao {
         const inputs = container.querySelectorAll(".input-numero");
 
         inputs.forEach(input => {
+            if (input.dataset.numeroPronto) return;
+            input.dataset.numeroPronto = "true";
             const isDecimal = input.dataset.decimal === "true";
             const showGroups = input.dataset.groups === "true";
             const allowNegative = input.dataset.negative === "true";
@@ -661,7 +668,7 @@ class AppVacinacao {
             if (optionsList) {
                 optionsList.addEventListener("click", (event) => {
                     const option = event.target.closest("li");
-                    if (option) {
+                    if (option?.dataset.value) {
                         const texto = option.dataset.text || option.textContent.trim();
                         if (selectedValueSpan) {
                             selectedValueSpan.textContent = texto;

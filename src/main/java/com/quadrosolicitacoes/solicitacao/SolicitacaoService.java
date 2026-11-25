@@ -38,7 +38,7 @@ public class SolicitacaoService {
     @Transactional
     public Long salvar(SolicitacaoCreateRequest form) {
         Solicitacao solicitacao = new Solicitacao();
-        solicitacao.setDescricao(form.descricao());
+        solicitacao.setDescricao(form.descricao().strip());
         solicitacao.setCategoria(categoriaRepository.findByIdAndStatus(form.categoriaId(), Status.ATIVO)
                 .orElseThrow(() -> new RegraNegocioException("Selecione uma categoria ativa")));
         solicitacao.setSolicitante(usuarioRepository.findByIdAndPapel(form.solicitanteId(), Papel.FUNCIONARIO)

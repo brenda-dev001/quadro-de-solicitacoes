@@ -44,6 +44,10 @@ public class PageWrapper<T> {
         return pagina.getContent();
     }
 
+    public long getTotalElementos() {
+        return pagina.getTotalElements();
+    }
+
     public boolean isVazia() {
         return pagina.getContent().isEmpty();
     }
@@ -77,7 +81,7 @@ public class PageWrapper<T> {
     }
 
     public String urlParaPagina(int pagina) {
-        return uriBuilder.replaceQueryParam("page", pagina).build(true).encode().toUriString();
+        return uriBuilder.cloneBuilder().replaceQueryParam("page", pagina).build(true).encode().toUriString();
     }
 
 	// Se a propriedade nao tiver uma ordenacao na URL atual, insere uma com a ordem
@@ -96,7 +100,7 @@ public class PageWrapper<T> {
         UriComponentsBuilder uriBuilderOrder = UriComponentsBuilder
                 .fromUriString(uriBuilder.build(true).encode().toUriString());
         String valorSort = String.format("%s,%s", propriedade, inverterDirecaoOrdem(propriedade));
-        return uriBuilderOrder.replaceQueryParam("sort", valorSort).build(true).encode().toUriString();
+        return uriBuilderOrder.replaceQueryParam("sort", valorSort).replaceQueryParam("page", 0).build(true).encode().toUriString();
     }
 
 	// Caso a propriedade tenha uma ordem o metodo retorna o seu inverso. ASC ->

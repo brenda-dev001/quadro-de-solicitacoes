@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import com.quadrosolicitacoes.core.web.validation.FormularioUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.quadrosolicitacoes.core.web.notification.NotificacaoSweetAlert2;
 import com.quadrosolicitacoes.core.web.notification.TipoNotificacaoSweetAlert2;
@@ -74,13 +75,21 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public String pesquisar(CategoriaSearchRequest form, Model model,
+    public String pesquisar(@Valid CategoriaSearchRequest form, BindingResult resultado, Model model,
             @PageableDefault(size = 7) @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
             HttpServletRequest request,
             HtmxRequest htmxRequest) {
-        Page<CategoriaResponse> pagina = categoriaService.pesquisar(form, pageable);
+        FormularioUtil.preservarValores(resultado, request, "id", "nome", "descricao");
+        if (pageable.getSort().stream().anyMatch(ordem -> !java.util.Set.of("id", "nome", "descricao").contains(ordem.getProperty()))) {
+            resultado.reject("ordenacao", "Selecione uma coluna válida para ordenar");
+        }
+        Page<CategoriaResponse> pagina = resultado.hasErrors() ? Page.empty(pageable) : categoriaService.pesquisar(form, pageable);
         log.info("Categorias pesquisadas: {}", pagina.getContent());
-        if (pagina.getContent().isEmpty()) {
+        boolean pesquisaRealizada = !resultado.hasErrors()
+                && ("true".equals(request.getParameter("pesquisa")) || !form.isEmpty());
+        model.addAttribute("pesquisaRealizada", pesquisaRealizada);
+        model.addAttribute("pesquisaInvalida", resultado.hasErrors());
+        if (pesquisaRealizada && pagina.isEmpty()) {
             model.addAttribute("notificacaoSA2",
                     new NotificacaoSweetAlert2("A busca não encontrou categorias",
                             TipoNotificacaoSweetAlert2.INFO, 4000));
