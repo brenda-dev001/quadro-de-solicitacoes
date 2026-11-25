@@ -1,5 +1,6 @@
 package com.quadrosolicitacoes.solicitacao;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -17,6 +18,8 @@ import io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.quadrosolicitacoes.categoria.CategoriaService;
+import com.quadrosolicitacoes.comentario.ComentarioService;
+import com.quadrosolicitacoes.comentario.dto.ComentarioCreateRequest;
 import com.quadrosolicitacoes.common.exception.RegraNegocioException;
 import com.quadrosolicitacoes.core.web.notification.NotificacaoSweetAlert2;
 import com.quadrosolicitacoes.core.web.notification.TipoNotificacaoSweetAlert2;
@@ -35,12 +38,14 @@ public class SolicitacaoController {
     private final SolicitacaoService solicitacaoService;
     private final CategoriaService categoriaService;
     private final UsuarioService usuarioService;
+    private final ComentarioService comentarioService;
 
     public SolicitacaoController(SolicitacaoService solicitacaoService, CategoriaService categoriaService,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService, ComentarioService comentarioService) {
         this.solicitacaoService = solicitacaoService;
         this.categoriaService = categoriaService;
         this.usuarioService = usuarioService;
+        this.comentarioService = comentarioService;
     }
 
     @GetMapping("/nova")
@@ -92,10 +97,18 @@ public class SolicitacaoController {
         return "usuarios/list_li :: lista";
     }
 
+    @GetMapping("/{id}/pesquisarautor")
+    public String pesquisarAutor(@PathVariable Long id,
+            @RequestParam(defaultValue = "") String termoBusca, Model model) {
+        model.addAttribute("usuarios", solicitacaoService.buscarParticipantes(id, termoBusca));
+        return "usuarios/list_li :: lista";
+    }
+
     @GetMapping("/{id}")
     public String detalhar(@PathVariable Long id, Model model,
+            @PageableDefault(size = 7) @SortDefault(sort = {"dataCriacao", "id"}) Pageable pageable,
             HttpServletRequest request, HtmxRequest htmxRequest) {
-        prepararDetalhes(id, model, request);
+        prepararDetalhes(id, model, pageable, request);
         return detalhes(htmxRequest);
     }
 
@@ -111,7 +124,7 @@ public class SolicitacaoController {
                 resultado.reject("regraNegocio", ex.getMessage());
             }
         }
-        prepararDetalhes(id, model, request);
+        prepararDetalhes(id, model, paginaComentarios(), request);
         return detalhes(htmxRequest);
     }
 
@@ -127,7 +140,7 @@ public class SolicitacaoController {
                 resultado.reject("regraNegocio", ex.getMessage());
             }
         }
-        prepararDetalhes(id, model, request);
+        prepararDetalhes(id, model, paginaComentarios(), request);
         return detalhes(htmxRequest);
     }
 
@@ -143,17 +156,40 @@ public class SolicitacaoController {
                 resultado.reject("regraNegocio", ex.getMessage());
             }
         }
-        prepararDetalhes(id, model, request);
+        prepararDetalhes(id, model, paginaComentarios(), request);
         return detalhes(htmxRequest);
     }
 
-    private void prepararDetalhes(Long id, Model model, HttpServletRequest request) {
+    @PostMapping("/{id}/comentarios")
+    public String comentar(@PathVariable Long id, @Valid ComentarioCreateRequest form,
+            BindingResult resultado, Model model, RedirectAttributes redirect,
+            HttpServletRequest request, HtmxRequest htmxRequest) {
+        if (!resultado.hasErrors()) {
+            try {
+                comentarioService.salvar(id, form);
+                return redirecionar(id, "Comentário adicionado com sucesso!", redirect, htmxRequest);
+            } catch (RegraNegocioException ex) {
+                resultado.reject("regraNegocio", ex.getMessage());
+            }
+        }
+        prepararDetalhes(id, model, paginaComentarios(), request);
+        return detalhes(htmxRequest);
+    }
+
+    private void prepararDetalhes(Long id, Model model, Pageable pageable, HttpServletRequest request) {
         SolicitacaoResponse solicitacao = solicitacaoService.buscarPorId(id);
         model.addAttribute("solicitacao", solicitacao);
+        model.addAttribute("pagina", new PageWrapper<>(comentarioService.pesquisar(id, pageable), request, "/solicitacoes/" + id));
         if (!model.containsAttribute("solicitacaoAtendimentoRequest")) model.addAttribute(
                 "solicitacaoAtendimentoRequest", new SolicitacaoAtendimentoRequest(null, null));
         if (!model.containsAttribute("solicitacaoCancelamentoRequest")) model.addAttribute(
                 "solicitacaoCancelamentoRequest", new SolicitacaoCancelamentoRequest(solicitacao.solicitanteId()));
+        if (!model.containsAttribute("comentarioCreateRequest")) model.addAttribute(
+                "comentarioCreateRequest", new ComentarioCreateRequest(null, null, null));
+    }
+
+    private Pageable paginaComentarios() {
+        return PageRequest.of(0, 7, Sort.by("dataCriacao", "id"));
     }
 
     private String detalhes(HtmxRequest htmxRequest) {

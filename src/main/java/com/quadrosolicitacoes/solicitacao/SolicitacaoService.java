@@ -1,5 +1,7 @@
 package com.quadrosolicitacoes.solicitacao;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoSearchRequest;
 import com.quadrosolicitacoes.usuario.Papel;
 import com.quadrosolicitacoes.usuario.Usuario;
 import com.quadrosolicitacoes.usuario.UsuarioRepository;
+import com.quadrosolicitacoes.usuario.dto.UsuarioResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,6 +53,16 @@ public class SolicitacaoService {
 
     public SolicitacaoResponse buscarPorId(Long id) {
         return toResponse(buscar(id));
+    }
+
+    public List<UsuarioResponse> buscarParticipantes(Long id, String nome) {
+        Solicitacao solicitacao = buscar(id);
+        List<Usuario> participantes = new ArrayList<>();
+        if (solicitacao.getSolicitante() != null) participantes.add(solicitacao.getSolicitante());
+        if (solicitacao.getTecnicoResponsavel() != null) participantes.add(solicitacao.getTecnicoResponsavel());
+        String termo = nome == null ? "" : nome.toLowerCase(java.util.Locale.ROOT);
+        return participantes.stream().filter(usuario -> usuario.getNome().toLowerCase(java.util.Locale.ROOT).contains(termo))
+                .map(usuario -> new UsuarioResponse(usuario.getId(), usuario.getNome())).toList();
     }
 
     @Transactional

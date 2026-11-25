@@ -22,6 +22,7 @@
         <section class="w-1/2 mt-6 ms-5">
             <div th:object="${solicitacaoAtendimentoRequest}"><div th:replace="~{solicitacoes/fragments/erros :: erros}"></div></div>
             <div th:object="${solicitacaoCancelamentoRequest}"><div th:replace="~{solicitacoes/fragments/erros :: erros}"></div></div>
+            <div th:object="${comentarioCreateRequest}"><div th:replace="~{solicitacoes/fragments/erros :: erros}"></div></div>
 
             <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA}"
                 th:hx-post="@{/solicitacoes/{id}/assumir(id=${solicitacao.id})}" th:object="${solicitacaoAtendimentoRequest}">
@@ -46,7 +47,28 @@
                 <button type="submit" hx-confirm="Você vai cancelar esta solicitação!" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Cancelar solicitação</button>
             </form>
         </section>
-
+        <section class="mt-10 ms-5">
+            <h4 class="text-xl">Comentários</h4>
+            <p th:if="${pagina.vazia}" class="text-gray-500 mt-5">Nenhum comentário cadastrado.</p>
+            <div th:each="comentario : ${pagina.conteudo}" class="border rounded-xl p-4 mt-5">
+                <p class="font-medium" th:text="${comentario.nomeAutor}"></p>
+                <p class="text-sm text-gray-500" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}"></p>
+                <p class="mt-3 whitespace-pre-wrap" th:text="${comentario.conteudo}"></p>
+            </div>
+            <div th:if="${not pagina.vazia}" th:insert="~{components/paginacao :: paginacao(${pagina})}"></div>
+            <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA
+                    or solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).EM_ANDAMENTO}"
+                th:hx-post="@{/solicitacoes/{id}/comentarios(id=${solicitacao.id})}"
+                th:object="${comentarioCreateRequest}" class="w-1/2 mt-6">
+                <div th:replace="~{components/forms :: inputBuscavel(
+                textoLabel='Autor', nomeAtributo='autorId', nomeAtributoTexto='nomeAutor',
+                placeholderBusca='Digite o nome para buscar...', urlBusca=@{/solicitacoes/{id}/pesquisarautor(id=${solicitacao.id})},
+                valorAtributo=*{autorId}, valorAtributoTexto=*{nomeAutor}, isValidado=true)}"></div>
+                <div th:replace="~{components/forms :: inputTextArea(textoLabel='Comentário', nomeAtributo='conteudo', isValidado=true)}"></div>
+                <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Comentar</button>
+            </form>
+            <a th:hx-get="@{/solicitacoes}" hx-push-url="true" class="cursor-pointer text-blue-600 mt-5 inline-block">Voltar para a pesquisa</a>
+        </section>
 
     </main>
 </body>

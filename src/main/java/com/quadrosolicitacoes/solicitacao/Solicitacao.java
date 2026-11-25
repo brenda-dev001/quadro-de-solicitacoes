@@ -1,6 +1,10 @@
 package com.quadrosolicitacoes.solicitacao;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import com.quadrosolicitacoes.comentario.Comentario;
+import jakarta.persistence.OneToMany;
 import com.quadrosolicitacoes.categoria.Categoria;
 import com.quadrosolicitacoes.usuario.Usuario;
 import jakarta.persistence.Column;
@@ -51,6 +55,10 @@ public class Solicitacao {
     @ManyToOne 
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
+
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "solicitacao")
+    private List<Comentario> comentarios = new ArrayList<>();
 
     @PrePersist 
     public void prePersist(){

@@ -26,6 +26,11 @@ public class PageWrapper<T> {
         definirInicioFimPaginacao();
     }
 
+    public PageWrapper(Page<T> pagina, HttpServletRequest request, String caminho) {
+        this(pagina, request);
+        this.uriBuilder.replacePath(request.getContextPath() + caminho);
+    }
+
     private String removeEmptyQueryParams(String queryString) {
         if (queryString == null || queryString.isBlank()) {
             return "";
