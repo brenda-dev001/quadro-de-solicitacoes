@@ -96,4 +96,44 @@ class CategoriaWebTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("CategoriaPaginada7")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("CategoriaPaginada8"))));
     }
+    @Test
+    void filtrosInvalidosRetornamMensagemSemErroInterno() throws Exception {
+        for (String id : new String[]{"abc", "-1", "0", "999999999999999999999"}) {
+            mvc.perform(get("/categorias").param("id", id))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attributeHasFieldErrors("categoriaSearchRequest", "id"))
+                    .andExpect(content().string(org.hamcrest.Matchers.containsString("Confira os dados informados")));
+        }
+        mvc.perform(get("/categorias").param("sort", "campoInexistente,asc"))
+                .andExpect(status().isOk()).andExpect(model().attributeHasErrors("categoriaSearchRequest"));
+    }
+
+    @Test
+    void limitaDescricaoEGravaTextosSemEspacosNasExtremidades() throws Exception {
+        mvc.perform(post("/categorias").param("nome", "Nome válido").param("descricao", "x".repeat(256)))
+                .andExpect(model().attributeHasFieldErrors("categoriaCreateRequest", "descricao"));
+        mvc.perform(post("/categorias").param("nome", "  Categoria aparada  ").param("descricao", "  Descrição aparada  "))
+                .andExpect(status().is3xxRedirection());
+        Categoria salva = repository.findAll().stream().filter(c -> "Categoria aparada".equals(c.getNome()))
+                .findFirst().orElseThrow();
+        assertThat(salva.getDescricao()).isEqualTo("Descrição aparada");
+    }
+
+    @Test
+    void abrirPeloMenuNaoExibeAvisoDeBuscaSemResultados() throws Exception {
+        mvc.perform(get("/categorias").header("HX-Request", "true"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("notificacaoSA2"))
+                .andExpect(model().attribute("pesquisaRealizada", false))
+                .andExpect(header().doesNotExist("HX-Trigger"));
+        mvc.perform(get("/categorias").param("pesquisa", "true").param("id", Long.toString(Long.MAX_VALUE)))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("notificacaoSA2"))
+                .andExpect(model().attribute("pesquisaRealizada", true));
+        mvc.perform(get("/categorias").param("id", "abc"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("notificacaoSA2"))
+                .andExpect(model().attribute("pesquisaInvalida", true));
+    }
+
 }
