@@ -62,3 +62,24 @@ yarn-error.log*
 
 coverage/
 *.exec
+
+.agents/
+.codex/
+.claude/
+.cursor/
+.cline/
+.roo/
+.gemini/
+.aider*
+.continue/
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.cursorignore
+.clinerules
+.roorules
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
