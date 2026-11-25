@@ -28,8 +28,20 @@
 	</scm>
 	<properties>
 		<java.version>26</java.version>
+        <tailwind-maven-plugin.version>1.1.0</tailwind-maven-plugin.version>
+        <tailwind.version>v4.3.3</tailwind.version>
 	</properties>
 	<dependencies>
+        <dependency>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.wimdeblauwe</groupId>
+            <artifactId>htmx-spring-boot-thymeleaf</artifactId>
+            <version>5.1.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -100,6 +112,20 @@
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>io.github.4ndreidev</groupId>
+                <artifactId>tailwind-maven-plugin</artifactId>
+                <version>${tailwind-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals><goal>compile</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <inputFile>${project.basedir}/src/main/resources/static/css/input.css</inputFile>
+                    <outputFile>${project.basedir}/src/main/resources/static/css/style.css</outputFile>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
