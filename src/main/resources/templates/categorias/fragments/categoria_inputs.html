@@ -1,0 +1,15 @@
+<th:block th:fragment="campos">
+
+    <div th:replace="~{components/forms :: inputTexto(
+        textoLabel='Nome', 
+        nomeAtributo='nome',
+        isValidado=true)}">
+    </div>
+
+    <div th:replace="~{components/forms :: inputTexto(
+        textoLabel='Descrição', 
+        nomeAtributo='descricao',
+        isValidado=true)}">
+    </div>
+
+</th:block>
