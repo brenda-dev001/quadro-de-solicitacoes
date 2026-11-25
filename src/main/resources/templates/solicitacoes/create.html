@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
+    layout:decorate="~{layout/layoutpadrao}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Abertura de Solicitação</title>
+</head>
+<body>
+    <main layout:fragment="conteudo" th:fragment="formulario" id="main" class="flex flex-col align-middle w-full m-10">
+        <h3 class="text-xl md:text-3xl mt-3 ms-5">Abertura de Solicitação</h3>
+
+        <form th:hx-post="@{/solicitacoes}" th:object="${solicitacaoCreateRequest}" class="w-1/2 mt-6 ms-5">
+            <div th:replace="~{solicitacoes/fragments/erros :: erros}"></div>
+            <div th:replace="~{solicitacoes/fragments/solicitacao_inputs :: campos}"></div>
+            <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Abrir solicitação</button>
+        </form>
+    </main>
+</body>
+</html>

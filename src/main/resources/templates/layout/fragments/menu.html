@@ -22,6 +22,14 @@
     </div>
   </div>
 
+
+  <div x-data="{ open: false }">
+    <button th:replace="~{components/menu-item-button :: menu-item-button('Solicitação', ~{::#cadastrar-icon})}"></button>
+    <div x-show="open" class="space-y-4 ps-10">
+      <div th:replace="~{components/menu-item-option :: menu-item-option('Abrir', @{/solicitacoes/nova}, ~{::#cadastrar-icon})}"></div>
+    </div>
+  </div>
+
 </div>
 
 <svg id="pessoa-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

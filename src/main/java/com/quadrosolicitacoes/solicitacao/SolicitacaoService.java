@@ -1,0 +1,59 @@
+package com.quadrosolicitacoes.solicitacao;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.quadrosolicitacoes.categoria.CategoriaRepository;
+import com.quadrosolicitacoes.common.enums.Status;
+import com.quadrosolicitacoes.common.exception.EntidadeNaoEncontradaException;
+import com.quadrosolicitacoes.common.exception.RegraNegocioException;
+import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoCreateRequest;
+import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoResponse;
+import com.quadrosolicitacoes.usuario.Papel;
+import com.quadrosolicitacoes.usuario.UsuarioRepository;
+
+@Service
+@Transactional(readOnly = true)
+public class SolicitacaoService {
+    private final SolicitacaoRepository solicitacaoRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public SolicitacaoService(SolicitacaoRepository solicitacaoRepository,
+            CategoriaRepository categoriaRepository, UsuarioRepository usuarioRepository) {
+        this.solicitacaoRepository = solicitacaoRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    @Transactional
+    public Long salvar(SolicitacaoCreateRequest form) {
+        Solicitacao solicitacao = new Solicitacao();
+        solicitacao.setDescricao(form.descricao());
+        solicitacao.setCategoria(categoriaRepository.findByIdAndStatus(form.categoriaId(), Status.ATIVO)
+                .orElseThrow(() -> new RegraNegocioException("Selecione uma categoria ativa")));
+        solicitacao.setSolicitante(usuarioRepository.findByIdAndPapel(form.solicitanteId(), Papel.FUNCIONARIO)
+                .orElseThrow(() -> new RegraNegocioException("Selecione um funcionário válido")));
+        solicitacao.setStatus(StatusSolicitacao.ABERTA);
+        return solicitacaoRepository.save(solicitacao).getId();
+    }
+
+    public SolicitacaoResponse buscarPorId(Long id) {
+        return toResponse(buscar(id));
+    }
+
+    private Solicitacao buscar(Long id) {
+        return solicitacaoRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Solicitação não encontrada"));
+    }
+
+    private SolicitacaoResponse toResponse(Solicitacao solicitacao) {
+        return new SolicitacaoResponse(solicitacao.getId(), solicitacao.getDescricao(), solicitacao.getStatus(),
+                solicitacao.getDataCriacao(),
+                solicitacao.getCategoria() != null ? solicitacao.getCategoria().getId() : null,
+                solicitacao.getCategoria() != null ? solicitacao.getCategoria().getNome() : null,
+                solicitacao.getSolicitante() != null ? solicitacao.getSolicitante().getId() : null,
+                solicitacao.getSolicitante() != null ? solicitacao.getSolicitante().getNome() : null,
+                solicitacao.getTecnicoResponsavel() != null ? solicitacao.getTecnicoResponsavel().getId() : null,
+                solicitacao.getTecnicoResponsavel() != null ? solicitacao.getTecnicoResponsavel().getNome() : null);
+    }
+}
