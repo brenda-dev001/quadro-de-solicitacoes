@@ -62,7 +62,7 @@
                                         class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
                                         Descrição
                                     </th>
-                                    <th scope="col" colspan="1"
+                                    <th scope="col" colspan="2"
                                         class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Ação
                                     </th>
                                 </tr>
@@ -81,6 +81,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                                         <a th:hx-get="@{/categorias/{id}/editar(id=${categoria.id})}"
                                         hx-push-url="true" class="cursor-pointer text-blue-600 hover:text-blue-500 decoration-2 hover:underline focus:outline-hidden focus:underline">Alterar</a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                        <button type="button"
+                                            th:hx-delete="@{/categorias/{id}(id=${categoria.id})}"
+                                            th:hx-confirm="${'Você vai remover a categoria ' + categoria.nome + '!'}"
+                                            class="text-red-600 hover:text-red-500 decoration-2 hover:underline focus:outline-hidden focus:underline cursor-pointer bg-transparent border-0 p-0 inline">Remover</button>
                                     </td>
                                 </tr>
                             </tbody>

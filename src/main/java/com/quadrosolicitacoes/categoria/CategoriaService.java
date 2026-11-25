@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.quadrosolicitacoes.common.enums.Status;
 import com.quadrosolicitacoes.common.exception.EntidadeNaoEncontradaException;
 import com.quadrosolicitacoes.categoria.dto.CategoriaCreateRequest;
 import com.quadrosolicitacoes.categoria.dto.CategoriaResponse;
@@ -31,11 +32,12 @@ public class CategoriaService {
     public Page<CategoriaResponse> pesquisar(CategoriaSearchRequest request,
             Pageable pageable) {
         if (request.isEmpty()) {
-            return categoriaRepository.findAll(pageable)
+            return categoriaRepository.findAllByStatus(Status.ATIVO, pageable)
                     .map(this::toResponse);
         }
 
         Categoria categoriaFiltro = toEntity(request);
+        categoriaFiltro.setStatus(Status.ATIVO);
 
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues().withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
@@ -45,23 +47,31 @@ public class CategoriaService {
     }
 
     public CategoriaUpdateRequest buscarParaEdicao(Long id) {
-        Categoria categoria = categoriaRepository.findById(id)
+        Categoria categoria = categoriaRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
         return toUpdateRequest(categoria);
     }
 
     public List<CategoriaResponse> buscarPeloNome(String nome) {
-        return categoriaRepository.findTop10ByNomeContainingIgnoreCaseOrderByNomeAsc(nome).stream()
+        return categoriaRepository.findTop10ByNomeContainingIgnoreCaseAndStatusOrderByNomeAsc(nome, Status.ATIVO).stream()
             .map(this::toResponse)
             .toList();
     }
 
     @Transactional
     public void atualizar(Long id, CategoriaUpdateRequest request) {
-        Categoria categoria = categoriaRepository.findById(id)
+        Categoria categoria = categoriaRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
         categoria.setNome(request.nome());
         categoria.setDescricao(request.descricao());
+        categoriaRepository.save(categoria);
+    }
+
+    @Transactional
+    public void remover(Long id) {
+        Categoria categoria = categoriaRepository.findByIdAndStatus(id, Status.ATIVO)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
+        categoria.setStatus(Status.INATIVO);
         categoriaRepository.save(categoria);
     }
 
