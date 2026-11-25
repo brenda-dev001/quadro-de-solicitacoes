@@ -1,40 +1,80 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
-    layout:decorate="~{layout/layoutpadrao}">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Edição de Categoria</title>
-</head>
-
-<body>
-    <!-- conteudo principal -->
-    <main layout:fragment="conteudo" th:fragment="formulario" id="main"
-        class="flex flex-col align-middle w-full">
-
-        <h3 class="text-xl md:text-3xl mt-10 ms-16">Edição de Categoria</h3>
-
-        <form th:hx-put="@{/categorias/{id}(id=${id})}" th:object="${categoriaUpdateRequest}" class="w-1/2 mt-10 ms-16">
-
-            <div th:replace="~{components/forms :: campoEstatico(
-                textoLabel='Código', 
-                textoExibicao=${id})}"></div>
-
-            <div th:replace="~{categorias/fragments/categoria_inputs :: campos}"></div>
-
-            <button type="submit"
-                class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Salvar</button>
-
-        </form>
-
-    </main>
-    <!-- !conteudo principal -->
-
-    <!-- Nao usamos
-	<th:block layout:fragment="scripts">
-		<script src="../static/js/index.js" th:src="@{/js/index.js}"></script>
-	</th:block> -->
-</body>
-
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            Editar categoria
+        </title>
+    </head>
+    <body>
+        <main id="main" class="page" tabindex="-1" layout:fragment="conteudo" th:fragment="formulario">
+            <header class="page-heading">
+                <div>
+                    <p class="eyebrow">
+                        QUADRO DE SOLICITAÇÕES
+                    </p>
+                    <h1>
+                        Editar categoria
+                    </h1>
+                    <p class="page-description">
+                        Atualize os dados desta categoria.
+                    </p>
+                </div>
+                <a th:href="@{/categorias}" th:hx-get="@{/categorias}" hx-push-url="true" class="btn btn-ghost">
+                    Voltar para categorias
+                </a>
+            </header>
+            <div class="form-layout">
+                <section class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2>
+                                Dados da categoria
+                            </h2>
+                            <p>
+                                Preencha os campos abaixo. Todos são obrigatórios.
+                            </p>
+                        </div>
+                    </div>
+                    <form th:hx-put="@{/categorias/{id}(id=${id})}" th:object="${categoriaUpdateRequest}" class="form-body" data-validate="categoria">
+                        <div class="record-code">
+                            Categoria
+                            <strong th:text="'#' + ${id}">
+                            </strong>
+                        </div>
+                        <div th:replace="~{categorias/fragments/categoria_inputs :: campos}">
+                        </div>
+                        <div class="form-actions">
+                            <a th:href="@{/categorias}" th:hx-get="@{/categorias}" hx-push-url="true" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Salvar alterações
+                            </button>
+                        </div>
+                    </form>
+                </section>
+                <aside class="help-card">
+                    <span class="stat-icon blue">
+                        <svg th:replace="~{components/icones :: icone('pasta')}">
+                        </svg>
+                    </span>
+                    <h3>
+                        Categorias que fazem sentido
+                    </h3>
+                    <p>
+                        Use nomes curtos e fáceis de identificar, como Informática, Manutenção ou Limpeza.
+                    </p>
+                    <div class="help-divider">
+                    </div>
+                    <h4>
+                        Uma boa descrição ajuda
+                    </h4>
+                    <p>
+                        Explique quais tipos de solicitação pertencem à categoria. Limite de 255 caracteres por campo.
+                    </p>
+                </aside>
+            </div>
+        </main>
+    </body>
 </html>

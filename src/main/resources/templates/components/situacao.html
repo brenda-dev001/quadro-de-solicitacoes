@@ -1,0 +1,6 @@
+<span th:fragment="situacao(status)" xmlns:th="http://www.thymeleaf.org" class="status-badge" th:classappend="${status != null ? 'status-' + status.name().toLowerCase() : ''}">
+    <span class="status-dot">
+    </span>
+    <span th:text="${status != null ? status.descricao : 'Não informado'}">
+    </span>
+</span>

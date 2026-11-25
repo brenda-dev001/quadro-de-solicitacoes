@@ -1,75 +1,176 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
-    layout:decorate="~{layout/layoutpadrao}">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Detalhes da Solicitação</title>
-</head>
-<body>
-    <main layout:fragment="conteudo" th:fragment="conteudo" id="main" class="flex flex-col align-middle w-full m-10">
-        <h3 class="text-xl md:text-3xl mt-3 ms-5">Detalhes da Solicitação</h3>
-
-        <section class="w-1/2 mt-6 ms-5" th:object="${solicitacao}">
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Código', textoExibicao=*{id})}"></div>
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Descrição', textoExibicao=*{descricao})}"></div>
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Situação', textoExibicao=*{status})}"></div>
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Abertura', textoExibicao=${#temporals.format(solicitacao.dataCriacao, 'dd/MM/yyyy HH:mm')})}"></div>
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Categoria', textoExibicao=*{nomeCategoria})}"></div>
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Funcionário', textoExibicao=*{nomeSolicitante})}"></div>
-            <div th:replace="~{components/forms :: campoEstatico(textoLabel='Técnico', textoExibicao=${solicitacao.nomeTecnico ?: 'Não atribuído'})}"></div>
-        </section>
-        <section class="w-1/2 mt-6 ms-5">
-            <div th:object="${solicitacaoAtendimentoRequest}"><div th:replace="~{solicitacoes/fragments/erros :: erros}"></div></div>
-            <div th:object="${solicitacaoCancelamentoRequest}"><div th:replace="~{solicitacoes/fragments/erros :: erros}"></div></div>
-            <div th:object="${comentarioCreateRequest}"><div th:replace="~{solicitacoes/fragments/erros :: erros}"></div></div>
-
-            <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA}"
-                th:hx-post="@{/solicitacoes/{id}/assumir(id=${solicitacao.id})}" th:object="${solicitacaoAtendimentoRequest}">
-                <div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Técnico', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisartecnico',
-                valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true)}"></div>
-                <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Iniciar atendimento</button>
-            </form>
-            <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).EM_ANDAMENTO}"
-                th:hx-post="@{/solicitacoes/{id}/concluir(id=${solicitacao.id})}" th:object="${solicitacaoAtendimentoRequest}">
-                <div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Técnico responsável', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisartecnico',
-                valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true)}"></div>
-                <button type="submit" hx-confirm="Você vai concluir esta solicitação!" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Concluir</button>
-            </form>
-            <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA}"
-                th:hx-post="@{/solicitacoes/{id}/cancelar(id=${solicitacao.id})}" th:object="${solicitacaoCancelamentoRequest}">
-                <input type="hidden" th:field="*{solicitanteId}" />
-                <p th:errors="*{solicitanteId}" class="text-sm text-red-600 mt-2"></p>
-                <button type="submit" hx-confirm="Você vai cancelar esta solicitação!" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Cancelar solicitação</button>
-            </form>
-        </section>
-        <section class="mt-10 ms-5">
-            <h4 class="text-xl">Comentários</h4>
-            <p th:if="${pagina.vazia}" class="text-gray-500 mt-5">Nenhum comentário cadastrado.</p>
-            <div th:each="comentario : ${pagina.conteudo}" class="border rounded-xl p-4 mt-5">
-                <p class="font-medium" th:text="${comentario.nomeAutor}"></p>
-                <p class="text-sm text-gray-500" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}"></p>
-                <p class="mt-3 whitespace-pre-wrap" th:text="${comentario.conteudo}"></p>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            Detalhes da solicitação
+        </title>
+    </head>
+    <body>
+        <main id="main" class="page" tabindex="-1" layout:fragment="conteudo" th:fragment="conteudo">
+            <header class="page-heading">
+                <div>
+                    <p class="eyebrow">
+                        QUADRO DE SOLICITAÇÕES
+                    </p>
+                    <h1>
+                        Detalhes da solicitação
+                    </h1>
+                    <p class="page-description">
+                        Informações do pedido, atendimento e histórico da conversa.
+                    </p>
+                </div>
+                <a th:href="@{/solicitacoes}" th:hx-get="@{/solicitacoes}" hx-push-url="true" class="btn btn-secondary">
+                    Voltar para solicitações
+                </a>
+            </header>
+            <div th:object="${solicitacaoAtendimentoRequest}">
+                <div th:replace="~{solicitacoes/fragments/erros :: erros}">
+                </div>
             </div>
-            <div th:if="${not pagina.vazia}" th:insert="~{components/paginacao :: paginacao(${pagina})}"></div>
-            <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA
-                    or solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).EM_ANDAMENTO}"
-                th:hx-post="@{/solicitacoes/{id}/comentarios(id=${solicitacao.id})}"
-                th:object="${comentarioCreateRequest}" class="w-1/2 mt-6">
-                <div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Autor', nomeAtributo='autorId', nomeAtributoTexto='nomeAutor',
-                placeholderBusca='Digite o nome para buscar...', urlBusca=@{/solicitacoes/{id}/pesquisarautor(id=${solicitacao.id})},
-                valorAtributo=*{#object?.autorId}, valorAtributoTexto=*{#object?.nomeAutor}, isValidado=true)}"></div>
-                <div th:replace="~{components/forms :: inputTextArea(textoLabel='Comentário', nomeAtributo='conteudo', isValidado=true)}"></div>
-                <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Comentar</button>
-            </form>
-            <a th:hx-get="@{/solicitacoes}" hx-push-url="true" class="cursor-pointer text-blue-600 mt-5 inline-block">Voltar para a pesquisa</a>
-        </section>
-
-    </main>
-</body>
+            <div th:object="${solicitacaoCancelamentoRequest}">
+                <div th:replace="~{solicitacoes/fragments/erros :: erros}">
+                </div>
+            </div>
+            <div th:object="${comentarioCreateRequest}">
+                <div th:replace="~{solicitacoes/fragments/erros :: erros}">
+                </div>
+            </div>
+            <div class="detail-layout">
+                <div class="detail-primary">
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div>
+                                <span class="record-code" th:text="'SOLICITAÇÃO #' + ${solicitacao.id}">
+                                </span>
+                                <h2 class="detail-title">
+                                    Descrição do pedido
+                                </h2>
+                            </div>
+                            <span th:replace="~{components/situacao :: situacao(${solicitacao.status})}">
+                            </span>
+                        </div>
+                        <div class="panel-content">
+                            <p class="request-description" th:text="${solicitacao.descricao}">
+                            </p>
+                            <div class="metadata-grid">
+                                <div>
+                                    <span class="metadata-label">
+                                        Categoria
+                                    </span>
+                                    <strong th:text="${solicitacao.nomeCategoria}">
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span class="metadata-label">
+                                        Aberta em
+                                    </span>
+                                    <strong th:text="${#temporals.format(solicitacao.dataCriacao, 'dd/MM/yyyy HH:mm')}">
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span class="metadata-label">
+                                        Solicitante
+                                    </span>
+                                    <strong th:text="${solicitacao.nomeSolicitante}">
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span class="metadata-label">
+                                        Técnico responsável
+                                    </span>
+                                    <strong th:text="${solicitacao.nomeTecnico ?: 'Não atribuído'}">
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h2>
+                                    Comentários
+                                </h2>
+                                <p>
+                                    O histórico da conversa entre solicitante e equipe.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div th:if="${pagina.vazia}" class="comment-empty">
+                                Nenhum comentário cadastrado. As atualizações aparecerão aqui.
+                            </div>
+                            <article th:each="comentario : ${pagina.conteudo}" class="comment">
+                                <div class="comment-avatar" th:text="${#strings.substring(comentario.nomeAutor, 0, 1)}">
+                                </div>
+                                <div class="comment-content">
+                                    <div class="comment-heading">
+                                        <strong th:text="${comentario.nomeAutor}">
+                                        </strong>
+                                        <time th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}">
+                                        </time>
+                                    </div>
+                                    <p th:text="${comentario.conteudo}">
+                                    </p>
+                                </div>
+                            </article>
+                            <div th:if="${not pagina.vazia}" th:insert="~{components/paginacao :: paginacao(${pagina})}">
+                            </div>
+                            <form th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA or solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).EM_ANDAMENTO}" th:hx-post="@{/solicitacoes/{id}/comentarios(id=${solicitacao.id})}" th:object="${comentarioCreateRequest}" class="comment-form" data-validate="comentario">
+                                <div th:replace="~{components/forms :: inputBuscavel( textoLabel='Autor', nomeAtributo='autorId', nomeAtributoTexto='nomeAutor', placeholderBusca='Digite para filtrar as opções', urlBusca=@{/solicitacoes/{id}/pesquisarautor(id=${solicitacao.id})}, valorAtributo=*{#object?.autorId}, valorAtributoTexto=*{#object?.nomeAutor}, isValidado=true, obrigatorio=true)}">
+                                </div>
+                                <div th:replace="~{components/forms :: inputTextArea(textoLabel='Comentário', nomeAtributo='conteudo', isValidado=true, obrigatorio=true, tamanhoMaximo=5000, placeholder='Escreva uma atualização sobre o atendimento', nroLinhas=4)}">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Comentar
+                                </button>
+                            </form>
+                            <p class="closed-message" th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).CONCLUIDA or solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).CANCELADA}">
+                                Esta solicitação foi encerrada. O histórico continua disponível para consulta.
+                            </p>
+                        </div>
+                    </section>
+                </div>
+                <aside class="panel action-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2>
+                                Atendimento
+                            </h2>
+                            <p>
+                                Acompanhe a próxima etapa.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <form data-validate="atendimento" th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA}" th:hx-post="@{/solicitacoes/{id}/assumir(id=${solicitacao.id})}" th:object="${solicitacaoAtendimentoRequest}">
+                            <div th:replace="~{components/forms :: inputBuscavel( textoLabel='Técnico', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico', placeholderBusca='Digite para filtrar as opções', urlBusca='/solicitacoes/pesquisartecnico', valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true, obrigatorio=true)}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Iniciar atendimento
+                            </button>
+                        </form>
+                        <form data-validate="atendimento" th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).EM_ANDAMENTO}" th:hx-post="@{/solicitacoes/{id}/concluir(id=${solicitacao.id})}" th:object="${solicitacaoAtendimentoRequest}">
+                            <div th:replace="~{components/forms :: inputBuscavel( textoLabel='Técnico responsável', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico', placeholderBusca='Digite para filtrar as opções', urlBusca='/solicitacoes/pesquisartecnico', valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true, obrigatorio=true)}">
+                            </div>
+                            <button type="submit" hx-confirm="Você vai concluir esta solicitação!" class="btn btn-primary">
+                                Concluir
+                            </button>
+                        </form>
+                        <form data-validate="atendimento" th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).ABERTA}" th:hx-post="@{/solicitacoes/{id}/cancelar(id=${solicitacao.id})}" th:object="${solicitacaoCancelamentoRequest}">
+                            <input type="hidden" th:field="*{solicitanteId}" />
+                            <p th:errors="*{solicitanteId}" class="text-sm text-red-600 mt-2">
+                            </p>
+                            <button type="submit" hx-confirm="Você vai cancelar esta solicitação!" class="btn btn-danger">
+                                Cancelar solicitação
+                            </button>
+                        </form>
+                        <div th:if="${solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).CONCLUIDA or solicitacao.status == T(com.quadrosolicitacoes.solicitacao.StatusSolicitacao).CANCELADA}" class="closed-message">
+                            Atendimento encerrado.
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </body>
 </html>

@@ -19,8 +19,8 @@
 
   <th:block th:if="${validFlag}">
     <div class="relative" th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}">
-      <input type="text" th:field="*{__${nomeAtributo}__}" th:disabled="${disabledFlag}" autocomplete="off"
-        th:class="|block w-full px-4 py-3 text-gray-500 disabled:opacity-50 rounded-lg border ${temErro ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'}|" />
+      <input type="text" th:required="${obrigatorio ?: false}" th:maxlength="${tamanhoMaximo}" th:placeholder="${placeholder}" th:field="*{__${nomeAtributo}__}" th:disabled="${disabledFlag}" autocomplete="off"
+        th:attr="aria-invalid=${temErro}" th:class="|block w-full px-4 py-3 text-gray-500 disabled:opacity-50 rounded-lg border ${temErro ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'}|" />
 
       <input th:if="${disabledFlag}" type="hidden" th:name="${nomeAtributo}" th:value="*{__${nomeAtributo}__}" />
 
@@ -41,7 +41,7 @@
 
   <th:block th:unless="${validFlag}">
     <div class="relative">
-      <input type="text" th:name="${nomeAtributo}" th:id="${nomeAtributo}" th:value="${valorAtributo}"
+      <input type="text" th:required="${obrigatorio ?: false}" th:maxlength="${tamanhoMaximo}" th:placeholder="${placeholder}" th:name="${nomeAtributo}" th:id="${nomeAtributo}" th:value="${valorAtributo}"
         th:disabled="${disabledFlag}" autocomplete="off"
         class="block w-full px-4 py-3 text-gray-500 disabled:opacity-50 border border-gray-300 rounded-lg focus:border-gray-500 focus:ring-gray-500" />
       <input th:if="${disabledFlag}" type="hidden" th:name="${nomeAtributo}" th:value="${valorAtributo}" />
@@ -436,8 +436,8 @@
   <th:block th:if="${validFlag}">
     <div class="relative" th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}">
 
-      <textarea th:field="*{__${nomeAtributo}__}" th:disabled="${disabledFlag}" th:rows="${linhas}"
-        th:class="|block w-full px-4 py-3 pr-10 text-gray-500 disabled:opacity-50 rounded-lg border ${temErro ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'}|"></textarea>
+      <textarea th:required="${obrigatorio ?: false}" th:maxlength="${tamanhoMaximo}" th:placeholder="${placeholder}" th:field="*{__${nomeAtributo}__}" th:disabled="${disabledFlag}" th:rows="${linhas}"
+        th:attr="aria-invalid=${temErro}" th:class="|block w-full px-4 py-3 pr-10 text-gray-500 disabled:opacity-50 rounded-lg border ${temErro ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'}|"></textarea>
 
       <input th:if="${disabledFlag}" type="hidden" th:name="${nomeAtributo}" th:value="*{__${nomeAtributo}__}" />
 
@@ -459,7 +459,7 @@
 
   <th:block th:unless="${validFlag}">
     <div class="relative">
-      <textarea th:name="${nomeAtributo}" th:id="${nomeAtributo}" th:text="${valorAtributo}"
+      <textarea th:required="${obrigatorio ?: false}" th:maxlength="${tamanhoMaximo}" th:placeholder="${placeholder}" th:name="${nomeAtributo}" th:id="${nomeAtributo}" th:text="${valorAtributo}"
         th:disabled="${disabledFlag}" th:rows="${linhas}"
         class="block w-full px-4 py-3 text-gray-500 disabled:opacity-50 border border-gray-300 rounded-lg focus:border-gray-500 focus:ring-gray-500"></textarea>
       <input th:if="${disabledFlag}" type="hidden" th:name="${nomeAtributo}" th:value="${valorAtributo}" />
@@ -619,11 +619,11 @@
   <th:block th:if="${validFlag}">
     <div class="searchable-select-container relative w-full mt-6"
       th:with="temErro=${#fields.hasErrors('__${nomeAtributo}__')}">
-      <label th:for="${nomeAtributo}" th:text="${textoLabel}" class="block text-gray-700 font-medium mb-2"></label>
+      <label th:for="${nomeAtributo + '-trigger'}" th:id="${nomeAtributo + '-label'}" th:text="${textoLabel}" class="block text-gray-700 font-medium mb-2"></label>
 
       <div class="relative w-full">
         <div
-          class="custom-select-trigger flex items-center justify-between w-full px-4 py-3 text-gray-500 text-base font-normal border rounded-lg cursor-pointer bg-white"
+          tabindex="0" role="combobox" aria-expanded="false" th:id="${nomeAtributo + '-trigger'}" th:attrappend="aria-controls=${nomeAtributo + '-list'}, aria-labelledby=${nomeAtributo + '-label'}" class="custom-select-trigger flex items-center justify-between w-full px-4 py-3 text-gray-500 text-base font-normal border rounded-lg cursor-pointer bg-white"
           th:classappend="${temErro ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'}"
           th:attr="data-dropdown-target=${'#' + nomeAtributo + '-dropdown'}">
 
@@ -633,7 +633,7 @@
 
           <div class="flex items-center gap-1">
             <button type="button"
-              class="clear-btn p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+              th:aria-label="${'Limpar ' + textoLabel}" class="clear-btn p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
               th:classappend="${valAtributo == null || valAtributo == '' ? 'hidden' : ''}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
@@ -669,7 +669,7 @@
             <div class="relative">
               <input type="text"
                 class="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-transparent"
-                th:placeholder="${placeholderBusca}" th:name="${paramBusca}" autocomplete="off"
+                th:placeholder="${placeholderBusca}" th:aria-label="${'Buscar ' + textoLabel}" th:hx-params="${paramBusca}" th:name="${paramBusca}" autocomplete="off"
                 th:hx-get="@{__${urlBusca}__}" th:hx-target="${'#' + nomeAtributo + '-list'}"
                 hx-trigger="keyup[this.value.trim().length >= 3] changed delay:500ms" hx-swap="innerHTML" />
               <div class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
@@ -686,7 +686,7 @@
         </div>
       </div>
 
-      <input type="hidden" class="hidden-select-input" th:name="${nomeAtributo}" th:id="${nomeAtributo}"
+      <input type="hidden" class="hidden-select-input" th:attr="data-required=${obrigatorio ?: false}" th:name="${nomeAtributo}" th:id="${nomeAtributo}"
         th:value="${valAtributo}" />
 
       <input th:if="${nomeAtributoTexto != null}" type="hidden" class="hidden-select-text-input"
@@ -700,11 +700,11 @@
 
   <th:block th:unless="${validFlag}">
     <div class="searchable-select-container relative w-full mt-6">
-      <label th:for="${nomeAtributo}" th:text="${textoLabel}" class="block text-gray-700 font-medium mb-2"></label>
+      <label th:for="${nomeAtributo + '-trigger'}" th:id="${nomeAtributo + '-label'}" th:text="${textoLabel}" class="block text-gray-700 font-medium mb-2"></label>
 
       <div class="relative w-full">
         <div
-          class="custom-select-trigger flex items-center justify-between w-full px-4 py-3 text-gray-500 text-base font-normal border border-gray-300 rounded-lg cursor-pointer bg-white"
+          tabindex="0" role="combobox" aria-expanded="false" th:id="${nomeAtributo + '-trigger'}" th:attrappend="aria-controls=${nomeAtributo + '-list'}, aria-labelledby=${nomeAtributo + '-label'}" class="custom-select-trigger flex items-center justify-between w-full px-4 py-3 text-gray-500 text-base font-normal border border-gray-300 rounded-lg cursor-pointer bg-white"
           th:attr="data-dropdown-target=${'#' + nomeAtributo + '-dropdown'}">
 
           <span class="selected-value-span truncate" th:id="${nomeAtributo + '-selected-text'}"
@@ -713,7 +713,7 @@
 
           <div class="flex items-center gap-1">
             <button type="button"
-              class="clear-btn p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+              th:aria-label="${'Limpar ' + textoLabel}" class="clear-btn p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
               th:classappend="${valAtributo == null || valAtributo == '' ? 'hidden' : ''}">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
@@ -735,7 +735,7 @@
             <div class="relative">
               <input type="text"
                 class="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-transparent"
-                th:placeholder="${placeholderBusca}" th:name="${paramBusca}" autocomplete="off"
+                th:placeholder="${placeholderBusca}" th:aria-label="${'Buscar ' + textoLabel}" th:hx-params="${paramBusca}" th:name="${paramBusca}" autocomplete="off"
                 th:hx-get="@{__${urlBusca}__}" th:hx-target="${'#' + nomeAtributo + '-list'}"
                 hx-trigger="keyup[this.value.trim().length >= 3] changed delay:500ms" hx-swap="innerHTML" />
               <div class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
@@ -752,7 +752,7 @@
         </div>
       </div>
 
-      <input type="hidden" class="hidden-select-input" th:name="${nomeAtributo}" th:id="${nomeAtributo}"
+      <input type="hidden" class="hidden-select-input" th:attr="data-required=${obrigatorio ?: false}" th:name="${nomeAtributo}" th:id="${nomeAtributo}"
         th:value="${valAtributo}" />
 
       <input th:if="${nomeAtributoTexto != null}" type="hidden" class="hidden-select-text-input"

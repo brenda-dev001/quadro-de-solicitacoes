@@ -1,0 +1,40 @@
+<svg th:fragment="icone(nome)" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <th:block th:switch="${nome}">
+        <g th:case="'quadro'">
+            <rect x="5" y="4" width="14" height="17" rx="2"/>
+            <path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4"/>
+        </g>
+        <g th:case="'inicio'">
+            <path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/>
+        </g>
+        <g th:case="'pasta'">
+            <path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/>
+        </g>
+        <g th:case="'mais'">
+            <path d="M12 5v14M5 12h14"/>
+        </g>
+        <g th:case="'seta'">
+            <path d="M5 12h14m-6-6 6 6-6 6"/>
+        </g>
+        <g th:case="'busca'">
+            <circle cx="10.5" cy="10.5" r="6.5"/>
+            <path d="m16 16 5 5"/>
+        </g>
+        <g th:case="'relogio'">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v5l3 2"/>
+        </g>
+        <g th:case="'check'">
+            <path d="m5 12 4 4L19 6"/>
+        </g>
+        <g th:case="'menu'">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+        </g>
+        <g th:case="'fechar'">
+            <path d="m6 6 12 12M6 18 18 6"/>
+        </g>
+        <g th:case="'comentario'">
+            <path d="M21 11a8 8 0 0 1-8 8H6l-4 3V11a9 9 0 0 1 19 0Z"/>
+        </g>
+    </th:block>
+</svg>

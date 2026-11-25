@@ -1,29 +1,13 @@
-<div th:fragment="header" xmlns:th="http://www.thymeleaf.org"
-  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-  <!-- Header -->
-  <header class="flex items-center justify-between bg-gray-800 p-4">
-    <!-- Botao Hamburger -->
-    <div class="md:hidden">
-      <button id="menu-btn" type="button" class="hamburger z-40 block focus:outline-none md:hidden">
-        <span class="hamburger-top"></span>
-        <span class="hamburger-middle"></span>
-        <span class="hamburger-bottom"></span>
-      </button>
+<header th:fragment="header" class="topbar" xmlns:th="http://www.thymeleaf.org">
+    <div class="topbar-title">
+
+        <span class="topbar-dot">
+        </span>
+        Central de atendimento
     </div>
-
-    <!-- Icone e nome sistema -->
-    <a th:href="@{/}">
-      <div class="flex items-center">
-        <div class="text-xl font-semibold text-gray-400 md:text-3xl">Quadro de Solicitações</div>
-      </div>
+    <a th:href="@{/solicitacoes/nova}" th:hx-get="@{/solicitacoes/nova}" hx-push-url="true" class="btn btn-primary btn-small">
+        <svg th:replace="~{components/icones :: icone('mais')}">
+        </svg>
+        Nova solicitação
     </a>
-
-  </header>
-
-  <!-- Mobile Menu -->
-  <div id="menu" hx-ignore
-    class="absolute bottom-0 left-0 top-0 hidden min-h-screen w-full flex-col space-y-3 self-end bg-gray-800 py-1 pl-12 pt-40 text-lg text-gray-400">
-    <th:block th:replace="~{layout/fragments/menu :: menu}"></th:block>
-  </div>
-
-</div>
+</header>

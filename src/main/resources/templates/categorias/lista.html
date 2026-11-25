@@ -1,105 +1,138 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
-    layout:decorate="~{layout/layoutpadrao}">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Pesquisa de Categorias</title>
-</head>
-
-<body>
-    <!-- conteudo principal -->
-    <main layout:fragment="conteudo" th:fragment="conteudo" id="main" class="flex flex-col align-middle w-full m-10">
-
-        <h3 class="text-xl md:text-3xl mt-3 ms-5">Pesquisa de Categorias</h3>
-
-        <form th:hx-get="@{/categorias}" th:object="${categoriaSearchRequest}" class="w-1/2 mt-6 ms-5">
-            <div th:replace="~{solicitacoes/fragments/erros :: erros}"></div>
-
-            <div class="flex gap-15">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            Categorias
+        </title>
+    </head>
+    <body>
+        <main id="main" class="page" tabindex="-1" layout:fragment="conteudo" th:fragment="conteudo">
+            <header class="page-heading">
                 <div>
-                    <div th:replace="~{components/forms :: inputNumero(
-                        textoLabel='Código',
-                        nomeAtributo='id',
-                        valorAtributo=*{#object?.id},
-                        showGroups=true)}"></div>
+                    <p class="eyebrow">
+                        QUADRO DE SOLICITAÇÕES
+                    </p>
+                    <h1>
+                        Categorias
+                    </h1>
+                    <p class="page-description">
+                        Organize os tipos de atendimento da sua equipe.
+                    </p>
                 </div>
-
-                <div>
-                    <div th:replace="~{components/forms :: inputTexto(
-                        textoLabel='Nome',
-                        nomeAtributo='nome',
-                        valorAtributo=*{#object?.nome})}"></div>
-                </div>
-
-                <div>
-                    <div th:replace="~{components/forms :: inputTexto(
-                        textoLabel='Descrição',
-                        nomeAtributo='descricao',
-                        valorAtributo=*{#object?.descricao})}"></div>
-                </div>
-            </div>
-
-            <button type="submit"
-                class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Pesquisar</button>
-
-        </form>
-
-        <div th:if="${not pagina.vazia}" class="flex flex-col w-full ml-5 mr-16 mt-5">
-            <div class="overflow-x-auto">
-                <div class="min-w-full inline-block align-middle">
-                    <div class="border rounded-xl overflow-hidden shadow">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th:block
-                                        th:replace="~{components/paginacao :: coluna(${pagina}, 'id', 'Código', '')}">
-                                    </th:block>
-                                    <th:block
-                                        th:replace="~{components/paginacao :: coluna(${pagina}, 'nome', 'Nome', '')}">
-                                    </th:block>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-                                        Descrição
-                                    </th>
-                                    <th scope="col" colspan="2"
-                                        class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Ação
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="categoria : ${pagina.conteudo}"
-                                    class="odd:bg-white even:bg-gray-100 hover:bg-gray-200">
-                                    <td th:text="${categoria.id}"
-                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">John Brown
-                                    </td>
-                                    <td th:text="${categoria.nome}"
-                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">45</td>
-                                    <td th:text="${categoria.descricao}"
-                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">New York No. 1 Lake
-                                        Park</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                        <a th:hx-get="@{/categorias/{id}/editar(id=${categoria.id})}"
-                                        hx-push-url="true" class="cursor-pointer text-blue-600 hover:text-blue-500 decoration-2 hover:underline focus:outline-hidden focus:underline">Alterar</a>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                        <button type="button"
-                                            th:hx-delete="@{/categorias/{id}(id=${categoria.id})}"
-                                            th:hx-confirm="${'Você vai remover a categoria ' + categoria.nome + '!'}"
-                                            class="text-red-600 hover:text-red-500 decoration-2 hover:underline focus:outline-hidden focus:underline cursor-pointer bg-transparent border-0 p-0 inline">Remover</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <a th:href="@{/categorias/nova}" th:hx-get="@{/categorias/nova}" hx-push-url="true" class="btn btn-primary">
+                    <svg th:replace="~{components/icones :: icone('mais')}">
+                    </svg>
+                    Nova categoria
+                </a>
+            </header>
+            <section class="panel filter-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>
+                            <svg th:replace="~{components/icones :: icone('busca')}">
+                            </svg>
+                            Filtrar categorias
+                        </h2>
+                        <p>
+                            Use um ou mais campos para encontrar o que precisa.
+                        </p>
                     </div>
-                    <div th:replace="~{components/paginacao :: paginacao(${pagina})}"></div>
                 </div>
-            </div>
-        </div>
-
-    </main>
-    <!-- !conteudo principal -->
-</body>
-
+                <form th:hx-get="@{/categorias}" th:object="${categoriaSearchRequest}" class="filter-body" data-validate="pesquisa">
+                    <input type="hidden" name="pesquisa" value="true"/>
+                    <div th:replace="~{solicitacoes/fragments/erros :: erros}">
+                    </div>
+                    <div class="filter-grid">
+                        <div class="filter-field filter-code" th:insert="~{components/forms :: inputNumero(textoLabel='Código', nomeAtributo='id', isValidado=true, showGroups=false, placeholder='Ex.: 12')}">
+                        </div>
+                        <div class="filter-field filter-name" th:insert="~{components/forms :: inputTexto(textoLabel='Nome', nomeAtributo='nome', isValidado=true, tamanhoMaximo=255, placeholder='Buscar pelo nome')}">
+                        </div>
+                        <div class="filter-field filter-description" th:insert="~{components/forms :: inputTexto(textoLabel='Descrição', nomeAtributo='descricao', isValidado=true, tamanhoMaximo=255, placeholder='O que você procura?')}">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <a th:href="@{/categorias}" th:hx-get="@{/categorias}" hx-push-url="true" class="btn btn-ghost">
+                            Limpar filtros
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <svg th:replace="~{components/icones :: icone('busca')}">
+                            </svg>
+                            Pesquisar
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <section class="panel results-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>
+                            Categorias cadastradas
+                        </h2>
+                        <p th:text="${pagina.totalElementos} + ' registro(s)'">
+                        </p>
+                    </div>
+                    <span class="count-label" th:if="${not pagina.vazia}" th:text="'Página ' + (${pagina.atual} + 1) + ' de ' + ${pagina.numeroPaginas}">
+                    </span>
+                </div>
+                <div th:if="${pagina.vazia and not pesquisaInvalida}" class="empty-state">
+                    <span class="empty-icon">
+                        <svg th:replace="~{components/icones :: icone('busca')}">
+                        </svg>
+                    </span>
+                    <h3 th:text="${pesquisaRealizada ? 'Nenhuma categoria encontrada' : 'Nenhuma categoria cadastrada'}"></h3>
+                    <p th:text="${pesquisaRealizada ? 'Tente ajustar os filtros para encontrar o que procura.' : 'Cadastre uma categoria para começar. Os registros aparecerão aqui.'}"></p>
+                    <a th:href="@{/categorias/nova}" th:hx-get="@{/categorias/nova}" hx-push-url="true" class="btn btn-secondary">
+                        Cadastrar categoria
+                    </a>
+                </div>
+                <div class="table-scroll" th:if="${not pagina.vazia}">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'id', 'Código', '')}">
+                                </th:block>
+                                <th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'nome', 'Categoria', '')}">
+                                </th:block>
+                                <th>
+                                    Descrição
+                                </th>
+                                <th class="align-right">
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="categoria : ${pagina.conteudo}">
+                                <td>
+                                    <span class="record-code" th:text="'#' + ${categoria.id}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="cell-title" th:text="${categoria.nome}">
+                                    </span>
+                                </td>
+                                <td class="cell-description" th:text="${categoria.descricao}">
+                                </td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a th:href="@{/categorias/{id}/editar(id=${categoria.id})}" th:hx-get="@{/categorias/{id}/editar(id=${categoria.id})}" hx-push-url="true" class="text-link">
+                                            Alterar
+                                        </a>
+                                        <button type="button" th:hx-delete="@{/categorias/{id}(id=${categoria.id})}" th:hx-confirm="${'Você vai remover a categoria ' + categoria.nome + '!'}" class="text-danger">
+                                            Remover
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-container" th:if="${not pagina.vazia}">
+                    <div th:replace="~{components/paginacao :: paginacao(${pagina})}">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
 </html>

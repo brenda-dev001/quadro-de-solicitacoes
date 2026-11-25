@@ -1,4 +1,27 @@
-<div th:fragment="sidebar" class="hidden flex-col space-y-3 bg-gray-800 py-1 pl-5 pt-10 text-gray-400 md:flex md:w-72"
-  xmlns:th="http://www.thymeleaf.org">
-  <th:block th:replace="~{layout/fragments/menu :: menu}"></th:block>
-</div>
+<aside th:fragment="sidebar" id="sidebar" class="sidebar" xmlns:th="http://www.thymeleaf.org" aria-label="Menu principal">
+    <a th:href="@{/}" th:hx-get="@{/}" hx-push-url="true" class="brand">
+        <span class="brand-mark">
+            <svg th:replace="~{components/icones :: icone('quadro')}">
+            </svg>
+        </span>
+        <span>
+            Quadro
+            <span class="brand-subtitle">
+                DE SOLICITAÇÕES
+            </span>
+        </span>
+    </a>
+    <div th:replace="~{layout/fragments/menu :: menu}">
+    </div>
+    <div class="sidebar-bottom">
+        <span class="workspace-icon">
+            Q
+        </span>
+        <div>
+            Organize. Acompanhe. Resolva.
+            <small>
+                Seu espaço de trabalho
+            </small>
+        </div>
+    </div>
+</aside>

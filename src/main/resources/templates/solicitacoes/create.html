@@ -1,20 +1,96 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
-    layout:decorate="~{layout/layoutpadrao}">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Abertura de Solicitação</title>
-</head>
-<body>
-    <main layout:fragment="conteudo" th:fragment="formulario" id="main" class="flex flex-col align-middle w-full m-10">
-        <h3 class="text-xl md:text-3xl mt-3 ms-5">Abertura de Solicitação</h3>
-
-        <form th:hx-post="@{/solicitacoes}" th:object="${solicitacaoCreateRequest}" class="w-1/2 mt-6 ms-5">
-            <div th:replace="~{solicitacoes/fragments/erros :: erros}"></div>
-            <div th:replace="~{solicitacoes/fragments/solicitacao_inputs :: campos}"></div>
-            <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Abrir solicitação</button>
-        </form>
-    </main>
-</body>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            Nova solicitação
+        </title>
+    </head>
+    <body>
+        <main id="main" class="page" tabindex="-1" layout:fragment="conteudo" th:fragment="formulario">
+            <header class="page-heading">
+                <div>
+                    <p class="eyebrow">
+                        QUADRO DE SOLICITAÇÕES
+                    </p>
+                    <h1>
+                        Nova solicitação
+                    </h1>
+                    <p class="page-description">
+                        Descreva sua necessidade. A equipe acompanha o restante.
+                    </p>
+                </div>
+                <a th:href="@{/solicitacoes}" th:hx-get="@{/solicitacoes}" hx-push-url="true" class="btn btn-ghost">
+                    Voltar para solicitações
+                </a>
+            </header>
+            <div class="form-layout">
+                <section class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2>
+                                O que você precisa resolver?
+                            </h2>
+                            <p>
+                                Preencha todos os campos para registrar o atendimento.
+                            </p>
+                        </div>
+                    </div>
+                    <form th:hx-post="@{/solicitacoes}" th:object="${solicitacaoCreateRequest}" class="form-body" data-validate="solicitacao">
+                        <div th:replace="~{solicitacoes/fragments/erros :: erros}">
+                        </div>
+                        <div th:replace="~{solicitacoes/fragments/solicitacao_inputs :: campos}">
+                        </div>
+                        <div class="form-actions">
+                            <a th:href="@{/solicitacoes}" th:hx-get="@{/solicitacoes}" hx-push-url="true" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Abrir solicitação
+                                <svg th:replace="~{components/icones :: icone('seta')}">
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+                <aside class="help-card">
+                    <span class="stat-icon blue">
+                        <svg th:replace="~{components/icones :: icone('quadro')}">
+                        </svg>
+                    </span>
+                    <h3>
+                        Conte o que aconteceu
+                    </h3>
+                    <p>
+                        Informe o problema, onde ele acontece e os detalhes que podem ajudar a equipe.
+                    </p>
+                    <div class="help-divider">
+                    </div>
+                    <h4>
+                        Como funciona?
+                    </h4>
+                    <ol class="steps">
+                        <li>
+                            <span>
+                                1
+                            </span>
+                            Registre sua solicitação.
+                        </li>
+                        <li>
+                            <span>
+                                2
+                            </span>
+                            A equipe inicia o atendimento.
+                        </li>
+                        <li>
+                            <span>
+                                3
+                            </span>
+                            Acompanhe pelos comentários.
+                        </li>
+                    </ol>
+                </aside>
+            </div>
+        </main>
+    </body>
 </html>

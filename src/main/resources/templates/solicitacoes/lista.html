@@ -1,70 +1,156 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
-    layout:decorate="~{layout/layoutpadrao}">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Pesquisa de Solicitações</title>
-</head>
-<body>
-    <main layout:fragment="conteudo" th:fragment="conteudo" id="main" class="flex flex-col align-middle w-full m-10">
-        <h3 class="text-xl md:text-3xl mt-3 ms-5">Pesquisa de Solicitações</h3>
-
-        <form th:hx-get="@{/solicitacoes}" th:object="${solicitacaoSearchRequest}" class="w-1/2 mt-6 ms-5">
-            <div th:replace="~{solicitacoes/fragments/erros :: erros}"></div>
-            <div th:replace="~{components/forms :: inputNumero(
-                textoLabel='Código', nomeAtributo='id', valorAtributo=*{#object?.id}, showGroups=true)}"></div>
-            <div th:replace="~{components/forms :: inputTexto(
-                textoLabel='Descrição', nomeAtributo='descricao', valorAtributo=*{#object?.descricao})}"></div>
-            <div th:replace="~{components/forms :: selectNormal(
-                textoLabel='Situação', nomeAtributo='status', valorAtributo=*{#object?.status},
-                listaOpcoes=${situacoes})}"></div>
-<div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Categoria', nomeAtributo='categoriaId', nomeAtributoTexto='nomeCategoria',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarcategoria',
-                valorAtributo=*{#object?.categoriaId}, valorAtributoTexto=*{#object?.nomeCategoria}, isValidado=false)}"></div>
-<div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Funcionário', nomeAtributo='solicitanteId', nomeAtributoTexto='nomeSolicitante',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarfuncionario',
-                valorAtributo=*{#object?.solicitanteId}, valorAtributoTexto=*{#object?.nomeSolicitante}, isValidado=false)}"></div>
-<div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Técnico', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisartecnico',
-                valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=false)}"></div>
-            <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Pesquisar</button>
-        </form>
-        <div th:if="${not pagina.vazia}" class="flex flex-col w-full mt-5">
-            <div class="overflow-x-auto border rounded-xl shadow">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead><tr><th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'id', 'Código', '')}"></th:block>
-<th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'dataCriacao', 'Abertura', '')}"></th:block>
-<th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'status', 'Situação', '')}"></th:block>
-<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Descrição</th>
-<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Categoria</th>
-<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Funcionário</th>
-<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Técnico</th>
-<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Ação</th>
-</tr></thead>
-                    <tbody>
-                        <tr th:each="solicitacao : ${pagina.conteudo}" class="odd:bg-white even:bg-gray-100 hover:bg-gray-200">
-                            <td th:text="${solicitacao.id}" class="px-6 py-4 text-sm text-gray-800"></td>
-<td th:text="${#temporals.format(solicitacao.dataCriacao, 'dd/MM/yyyy HH:mm')}" class="px-6 py-4 text-sm text-gray-800"></td>
-<td th:text="${solicitacao.status}" class="px-6 py-4 text-sm text-gray-800"></td>
-<td th:text="${solicitacao.descricao}" class="px-6 py-4 text-sm text-gray-800"></td>
-<td th:text="${solicitacao.nomeCategoria}" class="px-6 py-4 text-sm text-gray-800"></td>
-<td th:text="${solicitacao.nomeSolicitante}" class="px-6 py-4 text-sm text-gray-800"></td>
-<td th:text="${solicitacao.nomeTecnico ?: 'Não atribuído'}" class="px-6 py-4 text-sm text-gray-800"></td>
-
-                            <td class="px-6 py-4 text-sm font-medium">
-                                <a th:hx-get="@{/solicitacoes/{id}(id=${solicitacao.id})}" hx-push-url="true"
-                                    class="cursor-pointer text-blue-600 hover:text-blue-500 hover:underline">Detalhes</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div th:replace="~{components/paginacao :: paginacao(${pagina})}"></div>
-        </div>
-    </main>
-</body>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            Solicitações
+        </title>
+    </head>
+    <body>
+        <main id="main" class="page" tabindex="-1" layout:fragment="conteudo" th:fragment="conteudo">
+            <header class="page-heading">
+                <div>
+                    <p class="eyebrow">
+                        QUADRO DE SOLICITAÇÕES
+                    </p>
+                    <h1>
+                        Solicitações
+                    </h1>
+                    <p class="page-description">
+                        Acompanhe cada pedido, do registro à conclusão.
+                    </p>
+                </div>
+                <a th:href="@{/solicitacoes/nova}" th:hx-get="@{/solicitacoes/nova}" hx-push-url="true" class="btn btn-primary">
+                    <svg th:replace="~{components/icones :: icone('mais')}">
+                    </svg>
+                    Nova solicitação
+                </a>
+            </header>
+            <section class="panel filter-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>
+                            <svg th:replace="~{components/icones :: icone('busca')}">
+                            </svg>
+                            Filtrar solicitações
+                        </h2>
+                        <p>
+                            Use um ou mais campos para encontrar o que precisa.
+                        </p>
+                    </div>
+                </div>
+                <form th:hx-get="@{/solicitacoes}" th:object="${solicitacaoSearchRequest}" class="filter-body" data-validate="pesquisa">
+                    <input type="hidden" name="pesquisa" value="true"/>
+                    <div th:replace="~{solicitacoes/fragments/erros :: erros}">
+                    </div>
+                    <div class="filter-grid">
+                        <div class="filter-field filter-code" th:insert="~{components/forms :: inputNumero(textoLabel='Código', nomeAtributo='id', isValidado=true, showGroups=false, placeholder='Ex.: 12')}">
+                        </div>
+                        <div class="filter-field filter-description-wide" th:insert="~{components/forms :: inputTexto(textoLabel='Descrição', nomeAtributo='descricao', isValidado=true, tamanhoMaximo=5000, placeholder='O que você procura?')}">
+                        </div>
+                        <div class="filter-field filter-status" th:insert="~{components/forms :: selectNormal(textoLabel='Situação', nomeAtributo='status', listaOpcoes=${situacoes}, propLabel='descricao', isValidado=true, textoPlaceholder='Todas as situações')}">
+                        </div>
+                        <div class="filter-field filter-select" th:insert="~{components/forms :: inputBuscavel(textoLabel='Categoria', nomeAtributo='categoriaId', nomeAtributoTexto='nomeCategoria', urlBusca='/solicitacoes/pesquisarcategoria', placeholderBusca='Digite para filtrar as opções', valorAtributo=*{#object?.categoriaId}, valorAtributoTexto=*{#object?.nomeCategoria}, isValidado=true)}">
+                        </div>
+                        <div class="filter-field filter-select" th:insert="~{components/forms :: inputBuscavel(textoLabel='Funcionário', nomeAtributo='solicitanteId', nomeAtributoTexto='nomeSolicitante', urlBusca='/solicitacoes/pesquisarfuncionario', placeholderBusca='Digite para filtrar as opções', valorAtributo=*{#object?.solicitanteId}, valorAtributoTexto=*{#object?.nomeSolicitante}, isValidado=true)}">
+                        </div>
+                        <div class="filter-field filter-select" th:insert="~{components/forms :: inputBuscavel(textoLabel='Técnico', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico', urlBusca='/solicitacoes/pesquisartecnico', placeholderBusca='Digite para filtrar as opções', valorAtributo=*{#object?.tecnicoId}, valorAtributoTexto=*{#object?.nomeTecnico}, isValidado=true)}">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <a th:href="@{/solicitacoes}" th:hx-get="@{/solicitacoes}" hx-push-url="true" class="btn btn-ghost">
+                            Limpar filtros
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <svg th:replace="~{components/icones :: icone('busca')}">
+                            </svg>
+                            Pesquisar
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <section class="panel results-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>
+                            Todas as solicitações
+                        </h2>
+                        <p th:text="${pagina.totalElementos} + ' registro(s)'">
+                        </p>
+                    </div>
+                    <span class="count-label" th:if="${not pagina.vazia}" th:text="'Página ' + (${pagina.atual} + 1) + ' de ' + ${pagina.numeroPaginas}">
+                    </span>
+                </div>
+                <div th:if="${pagina.vazia and not pesquisaInvalida}" class="empty-state">
+                    <span class="empty-icon">
+                        <svg th:replace="~{components/icones :: icone('busca')}">
+                        </svg>
+                    </span>
+                    <h3 th:text="${pesquisaRealizada ? 'Nenhuma solicitação encontrada' : 'Nenhuma solicitação cadastrada'}"></h3>
+                    <p th:text="${pesquisaRealizada ? 'Tente ajustar os filtros para encontrar o que procura.' : 'Cadastre uma solicitação para começar. Os registros aparecerão aqui.'}"></p>
+                    <a th:href="@{/solicitacoes/nova}" th:hx-get="@{/solicitacoes/nova}" hx-push-url="true" class="btn btn-secondary">
+                        Cadastrar solicitação
+                    </a>
+                </div>
+                <div class="table-scroll" th:if="${not pagina.vazia}">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'id', 'Código', '')}">
+                                </th:block>
+                                <th>
+                                    Solicitação
+                                </th>
+                                <th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'status', 'Situação', '')}">
+                                </th:block>
+                                <th>
+                                    Responsáveis
+                                </th>
+                                <th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'dataCriacao', 'Abertura', '')}">
+                                </th:block>
+                                <th class="align-right">
+                                    Ação
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="solicitacao : ${pagina.conteudo}">
+                                <td>
+                                    <span class="record-code" th:text="'#' + ${solicitacao.id}">
+                                    </span>
+                                </td>
+                                <td class="cell-summary">
+                                    <span class="cell-title clamp-two" th:text="${solicitacao.descricao}">
+                                    </span>
+                                    <span class="cell-caption" th:text="${solicitacao.nomeCategoria}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:replace="~{components/situacao :: situacao(${solicitacao.status})}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="cell-title" th:text="${solicitacao.nomeSolicitante}">
+                                    </span>
+                                    <span class="cell-caption" th:text="${solicitacao.nomeTecnico ?: 'Técnico não atribuído'}">
+                                    </span>
+                                </td>
+                                <td class="cell-date" th:text="${#temporals.format(solicitacao.dataCriacao, 'dd/MM/yyyy HH:mm')}">
+                                </td>
+                                <td class="align-right">
+                                    <a th:href="@{/solicitacoes/{id}(id=${solicitacao.id})}" th:hx-get="@{/solicitacoes/{id}(id=${solicitacao.id})}" hx-push-url="true" class="btn btn-secondary btn-small">
+                                        Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-container" th:if="${not pagina.vazia}">
+                    <div th:replace="~{components/paginacao :: paginacao(${pagina})}">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
 </html>

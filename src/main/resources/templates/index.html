@@ -1,23 +1,174 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}" >
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-  <title>Página Principal</title>
-</head>
-
-<body>
-  <!-- conteudo principal -->
-  <main layout:fragment="conteudo" th:fragment="conteudo" id="main" class="flex flex-col align-middle justify-center w-full m-10">
-    <h1 class="text-2xl md:text-4xl text-center">Bem vindo ao Quadro de Solicitações</h1>
-  </main>
-  <!-- !conteudo principal -->
-
-  <!-- Nao usamos
-	<th:block layout:fragment="scripts">
-		<script src="../static/js/index.js" th:src="@{/js/index.js}"></script>
-	</th:block> -->
-</body>
-
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org" layout:decorate="~{layout/layoutpadrao}">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>
+            Visão geral
+        </title>
+    </head>
+    <body>
+        <main id="main" class="page" tabindex="-1" layout:fragment="conteudo" th:fragment="conteudo">
+            <header class="page-heading">
+                <div>
+                    <p class="eyebrow">
+                        QUADRO DE SOLICITAÇÕES
+                    </p>
+                    <h1>
+                        Visão geral
+                    </h1>
+                    <p class="page-description">
+                        Tudo o que você precisa para acompanhar os atendimentos.
+                    </p>
+                </div>
+            </header>
+            <section class="welcome">
+                <div>
+                    <span class="welcome-label">
+                        TUDO EM UM SÓ LUGAR
+                    </span>
+                    <h2>
+                        Um bom atendimento
+                        <br/>
+                        começa com organização.
+                    </h2>
+                    <p>
+                        Registre o que precisa, acompanhe cada etapa e mantenha a conversa com a equipe.
+                    </p>
+                    <a th:href="@{/solicitacoes/nova}" th:hx-get="@{/solicitacoes/nova}" hx-push-url="true" class="btn btn-white">
+                        Abrir uma solicitação
+                        <svg th:replace="~{components/icones :: icone('seta')}">
+                        </svg>
+                    </a>
+                </div>
+                <div class="welcome-art" aria-hidden="true">
+                    <div class="art-circle">
+                    </div>
+                    <div class="art-document">
+                        <div class="art-icon">
+                            <svg th:replace="~{components/icones :: icone('quadro')}">
+                            </svg>
+                        </div>
+                        <span class="art-line">
+                        </span>
+                        <span class="art-line short">
+                        </span>
+                        <div class="art-task">
+                            <span>
+                                ✓
+                            </span>
+                            Solicitação registrada
+                        </div>
+                        <div class="art-task">
+                            <span>
+                                ✓
+                            </span>
+                            Equipe em contato
+                        </div>
+                        <div class="art-progress">
+                            <i>
+                            </i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="stats-grid">
+                <a th:href="@{/solicitacoes?status=ABERTA}" th:hx-get="@{/solicitacoes?status=ABERTA}" hx-push-url="true" class="stat-card">
+                    <span class="stat-icon blue">
+                        <svg th:replace="~{components/icones :: icone('quadro')}">
+                        </svg>
+                    </span>
+                    <div>
+                        <span class="stat-number" th:text="${abertas}">
+                            0
+                        </span>
+                        <span class="stat-label">
+                            Aguardando atendimento
+                        </span>
+                    </div>
+                    <svg th:replace="~{components/icones :: icone('seta')}">
+                    </svg>
+                </a>
+                <a th:href="@{/solicitacoes?status=EM_ANDAMENTO}" th:hx-get="@{/solicitacoes?status=EM_ANDAMENTO}" hx-push-url="true" class="stat-card">
+                    <span class="stat-icon amber">
+                        <svg th:replace="~{components/icones :: icone('relogio')}">
+                        </svg>
+                    </span>
+                    <div>
+                        <span class="stat-number" th:text="${andamento}">
+                            0
+                        </span>
+                        <span class="stat-label">
+                            Em andamento
+                        </span>
+                    </div>
+                    <svg th:replace="~{components/icones :: icone('seta')}">
+                    </svg>
+                </a>
+                <a th:href="@{/solicitacoes?status=CONCLUIDA}" th:hx-get="@{/solicitacoes?status=CONCLUIDA}" hx-push-url="true" class="stat-card">
+                    <span class="stat-icon green">
+                        <svg th:replace="~{components/icones :: icone('check')}">
+                        </svg>
+                    </span>
+                    <div>
+                        <span class="stat-number" th:text="${concluidas}">
+                            0
+                        </span>
+                        <span class="stat-label">
+                            Concluídas
+                        </span>
+                    </div>
+                    <svg th:replace="~{components/icones :: icone('seta')}">
+                    </svg>
+                </a>
+            </div>
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>
+                            Por onde você quer começar?
+                        </h2>
+                        <p>
+                            Escolha uma opção para continuar.
+                        </p>
+                    </div>
+                </div>
+                <div class="quick-grid">
+                    <a th:href="@{/solicitacoes}" th:hx-get="@{/solicitacoes}" hx-push-url="true" class="quick-card">
+                        <span class="stat-icon blue">
+                            <svg th:replace="~{components/icones :: icone('busca')}">
+                            </svg>
+                        </span>
+                        <h3>
+                            Acompanhar solicitações
+                        </h3>
+                        <p>
+                            Consulte situações, responsáveis e comentários em um só lugar.
+                        </p>
+                        <span class="text-link">
+                            Ver solicitações
+                            <svg th:replace="~{components/icones :: icone('seta')}">
+                            </svg>
+                        </span>
+                    </a>
+                    <a th:href="@{/categorias}" th:hx-get="@{/categorias}" hx-push-url="true" class="quick-card">
+                        <span class="stat-icon violet">
+                            <svg th:replace="~{components/icones :: icone('pasta')}">
+                            </svg>
+                        </span>
+                        <h3>
+                            Organizar categorias
+                        </h3>
+                        <p>
+                            Mantenha os tipos de atendimento organizados para facilitar os registros.
+                        </p>
+                        <span class="text-link">
+                            Gerenciar categorias
+                            <svg th:replace="~{components/icones :: icone('seta')}">
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </body>
 </html>

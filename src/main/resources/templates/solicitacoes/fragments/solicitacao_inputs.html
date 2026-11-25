@@ -1,12 +1,8 @@
 <th:block th:fragment="campos" xmlns:th="http://www.thymeleaf.org">
-    <div th:replace="~{components/forms :: inputTextArea(
-        textoLabel='Descrição', nomeAtributo='descricao', isValidado=true)}"></div>
-    <div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Categoria', nomeAtributo='categoriaId', nomeAtributoTexto='nomeCategoria',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarcategoria',
-                valorAtributo=*{#object?.categoriaId}, valorAtributoTexto=*{#object?.nomeCategoria}, isValidado=true)}"></div>
-    <div th:replace="~{components/forms :: inputBuscavel(
-                textoLabel='Funcionário', nomeAtributo='solicitanteId', nomeAtributoTexto='nomeSolicitante',
-                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarfuncionario',
-                valorAtributo=*{#object?.solicitanteId}, valorAtributoTexto=*{#object?.nomeSolicitante}, isValidado=true)}"></div>
+    <div th:replace="~{components/forms :: inputTextArea( textoLabel='Descrição', nomeAtributo='descricao', isValidado=true, obrigatorio=true, tamanhoMaximo=5000, placeholder='Descreva o problema e informe os detalhes do atendimento', nroLinhas=5)}">
+    </div>
+    <div th:replace="~{components/forms :: inputBuscavel( textoLabel='Categoria', nomeAtributo='categoriaId', nomeAtributoTexto='nomeCategoria', placeholderBusca='Digite para filtrar as opções', urlBusca='/solicitacoes/pesquisarcategoria', valorAtributo=*{#object?.categoriaId}, valorAtributoTexto=*{#object?.nomeCategoria}, isValidado=true, obrigatorio=true)}">
+    </div>
+    <div th:replace="~{components/forms :: inputBuscavel( textoLabel='Funcionário', nomeAtributo='solicitanteId', nomeAtributoTexto='nomeSolicitante', placeholderBusca='Digite para filtrar as opções', urlBusca='/solicitacoes/pesquisarfuncionario', valorAtributo=*{#object?.solicitanteId}, valorAtributoTexto=*{#object?.nomeSolicitante}, isValidado=true, obrigatorio=true)}">
+    </div>
 </th:block>

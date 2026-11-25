@@ -1,15 +1,6 @@
-<th:block th:fragment="campos">
-
-    <div th:replace="~{components/forms :: inputTexto(
-        textoLabel='Nome', 
-        nomeAtributo='nome',
-        isValidado=true)}">
+<th:block th:fragment="campos" xmlns:th="http://www.thymeleaf.org">
+    <div th:replace="~{components/forms :: inputTexto(textoLabel='Nome', nomeAtributo='nome', isValidado=true, obrigatorio=true, tamanhoMaximo=255, placeholder='Ex.: Informática')}">
     </div>
-
-    <div th:replace="~{components/forms :: inputTexto(
-        textoLabel='Descrição', 
-        nomeAtributo='descricao',
-        isValidado=true)}">
+    <div th:replace="~{components/forms :: inputTextArea(textoLabel='Descrição', nomeAtributo='descricao', isValidado=true, obrigatorio=true, tamanhoMaximo=255, placeholder='Descreva o tipo de atendimento desta categoria', nroLinhas=4)}">
     </div>
-
 </th:block>
