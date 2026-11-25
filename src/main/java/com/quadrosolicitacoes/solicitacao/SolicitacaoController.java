@@ -1,5 +1,9 @@
 package com.quadrosolicitacoes.solicitacao;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,8 +20,10 @@ import com.quadrosolicitacoes.categoria.CategoriaService;
 import com.quadrosolicitacoes.common.exception.RegraNegocioException;
 import com.quadrosolicitacoes.core.web.notification.NotificacaoSweetAlert2;
 import com.quadrosolicitacoes.core.web.notification.TipoNotificacaoSweetAlert2;
+import com.quadrosolicitacoes.core.web.pagination.PageWrapper;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoCreateRequest;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoResponse;
+import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoSearchRequest;
 import com.quadrosolicitacoes.usuario.Papel;
 import com.quadrosolicitacoes.usuario.UsuarioService;
 
@@ -54,6 +60,18 @@ public class SolicitacaoController {
         return htmxRequest.isHtmxRequest() ? "solicitacoes/create :: formulario" : "solicitacoes/create";
     }
 
+    @GetMapping
+    public String pesquisar(SolicitacaoSearchRequest form, Model model,
+            @PageableDefault(size = 7) @SortDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            HttpServletRequest request, HtmxRequest htmxRequest) {
+        model.addAttribute("situacoes", StatusSolicitacao.values());
+        var pagina = solicitacaoService.pesquisar(form, pageable);
+        model.addAttribute("pagina", new PageWrapper<>(pagina, request));
+        if (pagina.isEmpty()) model.addAttribute("notificacaoSA2", new NotificacaoSweetAlert2(
+                "A busca não encontrou solicitações", TipoNotificacaoSweetAlert2.INFO, 4000));
+        return htmxRequest.isHtmxRequest() ? "solicitacoes/lista :: conteudo" : "solicitacoes/lista";
+    }
+
     @GetMapping("/pesquisarcategoria")
     public String pesquisarCategoria(@RequestParam(defaultValue = "") String termoBusca, Model model) {
         model.addAttribute("categorias", categoriaService.buscarPeloNome(termoBusca));
@@ -63,6 +81,12 @@ public class SolicitacaoController {
     @GetMapping("/pesquisarfuncionario")
     public String pesquisarFuncionario(@RequestParam(defaultValue = "") String termoBusca, Model model) {
         model.addAttribute("usuarios", usuarioService.buscarPeloNome(termoBusca, Papel.FUNCIONARIO));
+        return "usuarios/list_li :: lista";
+    }
+
+    @GetMapping("/pesquisartecnico")
+    public String pesquisarTecnico(@RequestParam(defaultValue = "") String termoBusca, Model model) {
+        model.addAttribute("usuarios", usuarioService.buscarPeloNome(termoBusca, Papel.TECNICO));
         return "usuarios/list_li :: lista";
     }
 

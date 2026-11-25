@@ -1,5 +1,7 @@
 package com.quadrosolicitacoes.solicitacao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.quadrosolicitacoes.categoria.CategoriaRepository;
@@ -8,6 +10,7 @@ import com.quadrosolicitacoes.common.exception.EntidadeNaoEncontradaException;
 import com.quadrosolicitacoes.common.exception.RegraNegocioException;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoCreateRequest;
 import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoResponse;
+import com.quadrosolicitacoes.solicitacao.dto.SolicitacaoSearchRequest;
 import com.quadrosolicitacoes.usuario.Papel;
 import com.quadrosolicitacoes.usuario.UsuarioRepository;
 
@@ -35,6 +38,10 @@ public class SolicitacaoService {
                 .orElseThrow(() -> new RegraNegocioException("Selecione um funcionário válido")));
         solicitacao.setStatus(StatusSolicitacao.ABERTA);
         return solicitacaoRepository.save(solicitacao).getId();
+    }
+
+    public Page<SolicitacaoResponse> pesquisar(SolicitacaoSearchRequest filtro, Pageable pageable) {
+        return solicitacaoRepository.findAll(SolicitacaoSpecs.comFiltros(filtro), pageable).map(this::toResponse);
     }
 
     public SolicitacaoResponse buscarPorId(Long id) {

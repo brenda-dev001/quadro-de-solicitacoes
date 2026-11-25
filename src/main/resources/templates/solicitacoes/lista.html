@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.thymeleaf.org"
+    layout:decorate="~{layout/layoutpadrao}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Pesquisa de Solicitações</title>
+</head>
+<body>
+    <main layout:fragment="conteudo" th:fragment="conteudo" id="main" class="flex flex-col align-middle w-full m-10">
+        <h3 class="text-xl md:text-3xl mt-3 ms-5">Pesquisa de Solicitações</h3>
+
+        <form th:hx-get="@{/solicitacoes}" th:object="${solicitacaoSearchRequest}" class="w-1/2 mt-6 ms-5">
+            <div th:replace="~{components/forms :: inputNumero(
+                textoLabel='Código', nomeAtributo='id', valorAtributo=*{id}, showGroups=true)}"></div>
+            <div th:replace="~{components/forms :: inputTexto(
+                textoLabel='Descrição', nomeAtributo='descricao', valorAtributo=*{descricao})}"></div>
+            <div th:replace="~{components/forms :: selectNormal(
+                textoLabel='Situação', nomeAtributo='status', valorAtributo=*{status},
+                listaOpcoes=${situacoes})}"></div>
+<div th:replace="~{components/forms :: inputBuscavel(
+                textoLabel='Categoria', nomeAtributo='categoriaId', nomeAtributoTexto='nomeCategoria',
+                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarcategoria',
+                valorAtributo=*{categoriaId}, valorAtributoTexto=*{nomeCategoria}, isValidado=false)}"></div>
+<div th:replace="~{components/forms :: inputBuscavel(
+                textoLabel='Funcionário', nomeAtributo='solicitanteId', nomeAtributoTexto='nomeSolicitante',
+                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisarfuncionario',
+                valorAtributo=*{solicitanteId}, valorAtributoTexto=*{nomeSolicitante}, isValidado=false)}"></div>
+<div th:replace="~{components/forms :: inputBuscavel(
+                textoLabel='Técnico', nomeAtributo='tecnicoId', nomeAtributoTexto='nomeTecnico',
+                placeholderBusca='Digite o nome para buscar...', urlBusca='/solicitacoes/pesquisartecnico',
+                valorAtributo=*{tecnicoId}, valorAtributoTexto=*{nomeTecnico}, isValidado=false)}"></div>
+            <button type="submit" class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Pesquisar</button>
+        </form>
+        <div th:if="${not pagina.vazia}" class="flex flex-col w-full mt-5">
+            <div class="overflow-x-auto border rounded-xl shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead><tr><th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'id', 'Código', '')}"></th:block>
+<th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'dataCriacao', 'Abertura', '')}"></th:block>
+<th:block th:replace="~{components/paginacao :: coluna(${pagina}, 'status', 'Situação', '')}"></th:block>
+<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Descrição</th>
+<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Categoria</th>
+<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Funcionário</th>
+<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Técnico</th>
+<th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Ação</th>
+</tr></thead>
+                    <tbody>
+                        <tr th:each="solicitacao : ${pagina.conteudo}" class="odd:bg-white even:bg-gray-100 hover:bg-gray-200">
+                            <td th:text="${solicitacao.id}" class="px-6 py-4 text-sm text-gray-800"></td>
+<td th:text="${#temporals.format(solicitacao.dataCriacao, 'dd/MM/yyyy HH:mm')}" class="px-6 py-4 text-sm text-gray-800"></td>
+<td th:text="${solicitacao.status}" class="px-6 py-4 text-sm text-gray-800"></td>
+<td th:text="${solicitacao.descricao}" class="px-6 py-4 text-sm text-gray-800"></td>
+<td th:text="${solicitacao.nomeCategoria}" class="px-6 py-4 text-sm text-gray-800"></td>
+<td th:text="${solicitacao.nomeSolicitante}" class="px-6 py-4 text-sm text-gray-800"></td>
+<td th:text="${solicitacao.nomeTecnico ?: 'Não atribuído'}" class="px-6 py-4 text-sm text-gray-800"></td>
+
+                            <td class="px-6 py-4 text-sm font-medium">
+                                <a th:hx-get="@{/solicitacoes/{id}(id=${solicitacao.id})}" hx-push-url="true"
+                                    class="cursor-pointer text-blue-600 hover:text-blue-500 hover:underline">Detalhes</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:replace="~{components/paginacao :: paginacao(${pagina})}"></div>
+        </div>
+    </main>
+</body>
+</html>
