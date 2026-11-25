@@ -14,15 +14,50 @@
 
         <h3 class="text-xl md:text-3xl mt-3 ms-5">Pesquisa de Categorias</h3>
 
-        <div th:if="${not #lists.isEmpty(categorias)}" class="flex flex-col w-full ml-5 mr-16 mt-5">
+        <form th:hx-get="@{/categorias}" th:object="${categoriaSearchRequest}" class="w-1/2 mt-6 ms-5">
+
+            <div class="flex gap-15">
+                <div>
+                    <div th:replace="~{components/forms :: inputNumero(
+                        textoLabel='Código',
+                        nomeAtributo='id',
+                        valorAtributo=*{id},
+                        showGroups=true)}"></div>
+                </div>
+
+                <div>
+                    <div th:replace="~{components/forms :: inputTexto(
+                        textoLabel='Nome',
+                        nomeAtributo='nome',
+                        valorAtributo=*{nome})}"></div>
+                </div>
+
+                <div>
+                    <div th:replace="~{components/forms :: inputTexto(
+                        textoLabel='Descrição',
+                        nomeAtributo='descricao',
+                        valorAtributo=*{descricao})}"></div>
+                </div>
+            </div>
+
+            <button type="submit"
+                class="mt-5 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none">Pesquisar</button>
+
+        </form>
+
+        <div th:if="${not pagina.vazia}" class="flex flex-col w-full ml-5 mr-16 mt-5">
             <div class="overflow-x-auto">
                 <div class="min-w-full inline-block align-middle">
                     <div class="border rounded-xl overflow-hidden shadow">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Código</th>
-                                    <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Nome</th>
+                                    <th:block
+                                        th:replace="~{components/paginacao :: coluna(${pagina}, 'id', 'Código', '')}">
+                                    </th:block>
+                                    <th:block
+                                        th:replace="~{components/paginacao :: coluna(${pagina}, 'nome', 'Nome', '')}">
+                                    </th:block>
                                     <th scope="col"
                                         class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
                                         Descrição
@@ -33,7 +68,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="categoria : ${categorias}"
+                                <tr th:each="categoria : ${pagina.conteudo}"
                                     class="odd:bg-white even:bg-gray-100 hover:bg-gray-200">
                                     <td th:text="${categoria.id}"
                                         class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">John Brown
@@ -51,6 +86,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div th:replace="~{components/paginacao :: paginacao(${pagina})}"></div>
                 </div>
             </div>
         </div>

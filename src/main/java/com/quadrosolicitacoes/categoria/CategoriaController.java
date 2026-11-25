@@ -1,5 +1,10 @@
 package com.quadrosolicitacoes.categoria;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,12 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import com.quadrosolicitacoes.core.web.notification.NotificacaoSweetAlert2;
 import com.quadrosolicitacoes.core.web.notification.TipoNotificacaoSweetAlert2;
+import com.quadrosolicitacoes.core.web.pagination.PageWrapper;
 import com.quadrosolicitacoes.categoria.dto.CategoriaCreateRequest;
 import com.quadrosolicitacoes.categoria.dto.CategoriaResponse;
+import com.quadrosolicitacoes.categoria.dto.CategoriaSearchRequest;
 import com.quadrosolicitacoes.categoria.dto.CategoriaUpdateRequest;
 
 @Slf4j
@@ -65,8 +73,19 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public String listar(Model model, HtmxRequest htmxRequest) {
-        model.addAttribute("categorias", categoriaService.listar());
+    public String pesquisar(CategoriaSearchRequest form, Model model,
+            @PageableDefault(size = 7) @SortDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+            HttpServletRequest request,
+            HtmxRequest htmxRequest) {
+        Page<CategoriaResponse> pagina = categoriaService.pesquisar(form, pageable);
+        log.info("Categorias pesquisadas: {}", pagina.getContent());
+        if (pagina.getContent().isEmpty()) {
+            model.addAttribute("notificacaoSA2",
+                    new NotificacaoSweetAlert2("A busca não encontrou categorias",
+                            TipoNotificacaoSweetAlert2.INFO, 4000));
+        }
+        PageWrapper<CategoriaResponse> paginaWrapper = new PageWrapper<>(pagina, request);
+        model.addAttribute("pagina", paginaWrapper);
         return htmxRequest.isHtmxRequest() ? "categorias/lista :: conteudo" : "categorias/lista";
     }
 

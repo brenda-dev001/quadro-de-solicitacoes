@@ -1,11 +1,16 @@
 package com.quadrosolicitacoes.categoria;
 
 import java.util.List;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.quadrosolicitacoes.common.exception.EntidadeNaoEncontradaException;
 import com.quadrosolicitacoes.categoria.dto.CategoriaCreateRequest;
 import com.quadrosolicitacoes.categoria.dto.CategoriaResponse;
+import com.quadrosolicitacoes.categoria.dto.CategoriaSearchRequest;
 import com.quadrosolicitacoes.categoria.dto.CategoriaUpdateRequest;
 
 @Service
@@ -23,14 +28,32 @@ public class CategoriaService {
         categoriaRepository.save(toEntity(form));
     }
 
-    public List<CategoriaResponse> listar() {
-        return categoriaRepository.findAll().stream().map(this::toResponse).toList();
+    public Page<CategoriaResponse> pesquisar(CategoriaSearchRequest request,
+            Pageable pageable) {
+        if (request.isEmpty()) {
+            return categoriaRepository.findAll(pageable)
+                    .map(this::toResponse);
+        }
+
+        Categoria categoriaFiltro = toEntity(request);
+
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues().withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        return categoriaRepository.findAll(Example.of(categoriaFiltro, matcher), pageable)
+                .map(this::toResponse);
     }
 
     public CategoriaUpdateRequest buscarParaEdicao(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
         return toUpdateRequest(categoria);
+    }
+
+    public List<CategoriaResponse> buscarPeloNome(String nome) {
+        return categoriaRepository.findTop10ByNomeContainingIgnoreCaseOrderByNomeAsc(nome).stream()
+            .map(this::toResponse)
+            .toList();
     }
 
     @Transactional
@@ -40,6 +63,14 @@ public class CategoriaService {
         categoria.setNome(request.nome());
         categoria.setDescricao(request.descricao());
         categoriaRepository.save(categoria);
+    }
+
+    private Categoria toEntity(CategoriaSearchRequest request) {
+        Categoria categoria = new Categoria();
+        categoria.setId(request.id());
+        categoria.setNome(request.nome());
+        categoria.setDescricao(request.descricao());
+        return categoria;
     }
 
     private Categoria toEntity(CategoriaCreateRequest request) {
